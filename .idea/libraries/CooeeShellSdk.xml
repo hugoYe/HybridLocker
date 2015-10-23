@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="CooeeShellSdk">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/CooeeShellSdk.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

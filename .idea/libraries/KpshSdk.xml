@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="KpshSdk">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/KpshSdk.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
