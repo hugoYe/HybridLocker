@@ -22,6 +22,7 @@ package org.apache.cordova.engine;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -58,6 +59,7 @@ public class SystemWebView extends WebView implements CordovaWebViewEngine.Engin
         if (this.chromeClient == null) {
             setWebChromeClient(new SystemWebChromeClient(parentEngine));
         }
+
     }
 
     @Override
@@ -85,4 +87,15 @@ public class SystemWebView extends WebView implements CordovaWebViewEngine.Engin
         }
         return super.dispatchKeyEvent(event);
     }
+
+    /** Modified by Hugo.ye begin */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(SystemWebViewEngine.touchEventHelper.preventTouchEvent){
+            return false;
+        } else {
+           return  super.onTouchEvent(event);
+        }
+    }
+    /** Modified by Hugo.ye end */
 }

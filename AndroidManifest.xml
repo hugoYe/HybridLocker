@@ -14,6 +14,16 @@
             android:smallScreens="true"
             android:xlargeScreens="true"/>
 
+    <uses-sdk
+            android:minSdkVersion="14"
+            android:targetSdkVersion="22"/>
+
+    <uses-feature
+            android:name="android.hardware.bluetooth_le"
+            android:required="false"/>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -33,12 +43,12 @@
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <!-- @liulinkai add push start -->
-    <!-- 允许程序使用震动 -->
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <!-- 允许程序添加桌面快捷方式 -->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
-    <!-- @liulinkai add push end -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
 
     <application
             android:allowBackup="true"
@@ -46,51 +56,29 @@
             android:icon="@drawable/icon"
             android:label="@string/app_name"
             android:supportsRtl="true">
-        <!--<activity
-                 android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
-                 android:label="@string/activity_name"
-                 android:launchMode="singleTop"
-                 android:name="MainActivity"
-                 android:theme="@android:style/Theme.Black.NoTitleBar"
-                 android:windowSoftInputMode="adjustResize">
-             <intent-filter android:label="@string/launcher_name">
-                 <action android:name="android.intent.action.MAIN"/>
-                 <category android:name="android.intent.category.LAUNCHER"/>
-             </intent-filter>
-         </activity>-->
-
-         <activity
-                android:name="com.coco.lock2.local.app.lephone.LockActivity"
+        <activity
                 android:label="@string/app_name"
+                android:name="com.coco.lock2.local.app.lephone.LockActivity"
                 android:screenOrientation="portrait"
                 android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
             <intent-filter>
                 <action android:name="com.coco.lock.action.VIEW"/>
-
                 <category android:name="android.intent.category.INFO"/>
             </intent-filter>
         </activity>
-
         <service
-                android:name="com.cooee.statistics.StatisticsServiceNew"
                 android:enabled="true"
-                android:exported="true"/>
-
+                android:exported="true"
+                android:name="com.cooee.statistics.StatisticsServiceNew"/>
         <receiver android:name="com.coco.lock2.local.app.base.BootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <!-- gaominghui  add start -->
-        <!-- 锁屏加push需要的服务和广播 -->
         <service
                 android:name="com.kpsh.sdk.KpshService"
                 android:process="com.kpsh.kpshservice">
@@ -98,7 +86,6 @@
                 <action android:name="com.kpsh.sdk.action.KpshService"/>
             </intent-filter>
         </service>
-
         <receiver android:name="com.kpsh.sdk.KpshReceiver">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
@@ -116,15 +103,14 @@
                 <action android:name="android.intent.action.CHECK_RECEIVER"/>
             </intent-filter>
         </receiver>
-
         <activity
-                android:name="com.kpsh.sdk.KpshActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:exported="true"
+                android:name="com.kpsh.sdk.KpshActivity"
                 android:taskAffinity="com.kpsh.sdk.callScreen"
                 android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
-        <!-- 注册组件开始 -->
+
         <service
                 android:name="com.cooee.shell.shell.SdkServiceHullV5"
                 android:process="com.platform.shell.sdk">
@@ -141,19 +127,19 @@
         </service>
 
         <activity
-                android:name="com.cooee.shell.shell.SdkActivityHullV5"
                 android:configChanges="orientation|keyboardHidden|screenSize"
+                android:name="com.cooee.shell.shell.SdkActivityHullV5"
                 android:theme="@android:color/transparent">
         </activity>
         <activity
-                android:name="com.cooee.shell.pay.PayActivityHullV5"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:exported="true"
+                android:name="com.cooee.shell.pay.PayActivityHullV5"
                 android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
         <activity
-                android:name="com.cooee.shell.download.DownloaderActivityHullV5"
-                android:configChanges="orientation|keyboardHidden|screenSize">
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:name="com.cooee.shell.download.DownloaderActivityHullV5">
         </activity>
 
         <receiver android:name="com.cooee.shell.shell.SdkReceiverHullV5">
@@ -164,10 +150,6 @@
                 <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
             </intent-filter>
         </receiver>
-        <!-- 注册组件结束 -->
-        <!-- gaominghui  add end -->
     </application>
-    <uses-sdk
-            android:minSdkVersion="14"
-            android:targetSdkVersion="22"/>
+
 </manifest>

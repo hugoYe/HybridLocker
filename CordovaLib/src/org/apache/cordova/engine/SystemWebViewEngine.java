@@ -70,6 +70,8 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
     protected NativeToJsMessageQueue nativeToJsMessageQueue;
     private BroadcastReceiver receiver;
 
+    public static TouchEventHelper touchEventHelper = new TouchEventHelper();;
+
     /** Used when created via reflection. */
     public SystemWebViewEngine(Context context, CordovaPreferences preferences) {
         this(new SystemWebView(context), preferences);

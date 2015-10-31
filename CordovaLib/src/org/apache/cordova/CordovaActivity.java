@@ -227,6 +227,49 @@ public class CordovaActivity extends Activity {
     }
 
     /**
+     * add by Hugo.ye begin
+     * */
+    public View loadWebViewUrl(String url) {
+        if (appView == null) {
+            appView = makeWebView();
+            //Why are we setting a constant as the ID? This should be investigated
+            appView.getView().setId(100);
+            appView.getView().setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+            if (preferences.contains("BackgroundColor")) {
+                int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
+                // Background of activity:
+                appView.getView().setBackgroundColor(backgroundColor);
+            }
+
+            appView.getView().requestFocusFromTouch();
+
+            if (!appView.isInitialized()) {
+                appView.init(cordovaInterface, pluginEntries, preferences);
+            }
+            cordovaInterface.onCordovaInit(appView.getPluginManager());
+
+            // Wire the hardware volume controls to control media if desired.
+            String volumePref = preferences.getString("DefaultVolumeStream", "");
+            if ("media".equals(volumePref.toLowerCase(Locale.ENGLISH))) {
+                setVolumeControlStream(AudioManager.STREAM_MUSIC);
+            }
+        }
+
+        // If keepRunning
+        this.keepRunning = preferences.getBoolean("KeepRunning", true);
+
+        appView.loadUrlIntoView(url, true);
+
+        return appView.getView();
+    }
+    /**
+     * add by Hugo.ye end
+     * */
+
+    /**
      * Called when the system is about to start resuming a previous activity.
      */
     @Override

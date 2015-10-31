@@ -119,37 +119,41 @@ h1 {
 * {
   margin: 0px;
   padding: 0px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 html,
 body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
+  background: rgba(0, 0, 0, 0);
 }
 #background {
   width: 100%;
   height: 100%;
-  background-color: lightskyblue;
+  background-color: rgba(0, 0, 0, 0);
 }
 #slide {
   position: absolute;
-  height: 60%;
+  height: 61%;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  bottom: -55%;
-  transition: bottom 0.2s linear;
+  background: rgba(0, 0, 0, 0.7);
+  transition: -webkit-transform 0.3s linear;
+  -webkit-transform: translate3d(0, 0%, 0);
 }
-#slide .touch {
-  margin-top: 10px;
-  margin-bottom: 30px;
+#slide .touch_item {
+  padding-top: 3%;
+  padding-bottom: 4%;
 }
-#slide .touch img {
+#slide .touch_item .touch {
   display: block;
   margin: 0px auto;
   width: 8%;
-}
-#slide.up {
-  bottom: -5%;
+  transition: -webkit-transform 0.3s linear;
+  -webkit-transform: rotateZ(180deg);
 }
 #state {
   list-style: none;
@@ -173,32 +177,116 @@ body {
   margin-right: 0;
 }
 #app {
-  width: 100%;
+  width: 90%;
   list-style: none;
   padding-left: 5%;
+  padding-top: 2%;
+  padding-bottom: 2%;
   overflow: hidden;
 }
 #app .app_item {
   float: left;
-  margin-right: 10%;
+  margin-right: 6.25%;
   width: 15%;
-  margin-bottom: 30px;
 }
-#app .app_item div {
+#app .app_item div,
+#app .app_item a {
   display: inline-block;
   width: 100%;
   text-decoration: none;
   color: #fff;
-  font-size: 12px;
+  font-size: 0.8rem;
 }
-#app .app_item div img {
+#app .app_item div img,
+#app .app_item a img {
   width: 100%;
 }
-#app .app_item div p {
+#app .last {
+  margin-right: 0;
+}
+#link {
+  width: 90%;
+  list-style: none;
+  padding-left: 5%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  overflow: hidden;
+}
+#link .link_item {
+  float: left;
+  margin-right: 10%;
+  width: 12%;
+}
+#link .link_item div,
+#link .link_item a {
+  display: inline-block;
+  width: 100%;
+  text-decoration: none;
+  color: #fff;
+  font-size: 0.6rem;
+}
+#link .link_item div img,
+#link .link_item a img {
+  width: 100%;
+  margin-bottom: 2%;
+}
+#link .link_item div p,
+#link .link_item a p {
   text-align: center;
 }
-#divider {
+#link .last {
+  margin-right: 0;
+}
+.divider {
   width: 90%;
-  margin: 30px auto;
-  border-top: 1px solid #fff;
+  margin: 4% auto 3% auto;
+  border-top: 1px solid #D6D6D6;
+}
+.divider2 {
+  width: 90%;
+  margin: 3% auto 3% auto;
+  border-top: 1px solid #D6D6D6;
+}
+table.link_table {
+  width: 90%;
+  margin: 2% auto 0 auto;
+  color: #fff;
+  font-size: 1rem;
+  border-collapse: collapse;
+}
+table.link_table tr {
+  line-height: 2.5rem;
+  border-bottom: 1px solid #D6D6D6;
+}
+table.link_table tr td {
+  text-align: center;
+  border-right: 1px solid #D6D6D6;
+  width: 33%;
+  position: relative;
+}
+table.link_table tr td .hot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20%;
+}
+table.link_table tr td.last_td {
+  border-right: none;
+}
+table.link_table tr.last_tr {
+  border-bottom: none;
+}
+#button_th {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 10%;
+  transition: opacity 0.3s linear;
+}
+#button_th img {
+  width: 100%;
+}
+a {
+  text-decoration: none;
+  color: #fff;
 }

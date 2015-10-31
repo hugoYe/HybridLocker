@@ -37,6 +37,7 @@
         <title>Hello World</title>
     </head>
     <body>
+        <!-- cordova demo begin -->
         <!--
         <div class="app">
             <h1>Apache Cordova</h1>
@@ -46,101 +47,134 @@
             </div>
         </div>
         -->
+        <!-- cordova demo end -->
 
         <!--背景-->
         <div id="background">
         </div>
         <!--半透明滑动块-->
+
         <div id="slide">
             <!--点击区域,点击后触发滑动事件-->
-            <div class="touch">
-                <img src="res/arrow.png" alt="arrow"/>
+            <div class="touch_item">
+                <img src="res/arrow.png"  class="touch" alt="arrow"/>
             </div>
             <div>
                 <!--状态栏-->
                 <ul id="state">
                     <li class="state_item">
                         <div>
-                            <img src="res/shortcut_wifi_on.png" onclick="openSome(event)" alt=""/>
+                            <img id="state_wifi" src="res/shortcut_wifi_on.png" alt=""/>
                         </div>
                     </li>
                     <li class="state_item">
                         <div>
-                            <img src="res/shortcut_net_on.png" onclick="openSome(event)" alt=""/>
+                            <img id="state_net" src="res/shortcut_net_on.png" alt=""/>
                         </div>
                     </li>
                     <li class="state_item">
                         <div>
-                            <img src="res/shortcut_blue_on.png" onclick="openSome(event)" alt=""/>
+                            <img id="state_blue" src="res/shortcut_blue_on.png" alt=""/>
                         </div>
                     </li>
                     <li class="state_item">
                         <div>
-                            <img src="res/shortcut_light_on.png" onclick="openSome(event)" alt=""/>
+                            <img id="state_light" src="res/shortcut_light_off.png" alt=""/>
                         </div>
                     </li>
                     <li class="state_item last">
                         <div>
-                            <img src="res/shortcut_camera_on.png" onclick="openSome(event)" alt=""/>
+                            <img id="state_camera" src="res/shortcut_camera_on.png" alt=""/>
                         </div>
                     </li>
                 </ul>
             </div>
             <!--分隔线-->
-            <div id="divider"></div>
+            <div class="divider"></div>
             <div>
                 <!--app区域-->
                 <ul id="app">
                     <li class="app_item">
                         <div>
-                            <img src="res/360.png" onclick="openSome(event)" alt=""/>
-                            <p>网址导航</p>
+                            <img src="res/360.png"  alt=""/>
                         </div>
                     </li>
                     <li class="app_item">
                         <div>
-                            <img src="res/1.png" onclick="openSome(event)" alt=""/>
-                            <p>游戏中心</p>
+                            <img src="res/1.png" alt=""/>
                         </div>
                     </li>
                     <li class="app_item">
                         <div>
-                            <img src="res/2.png" onclick="openSome(event)" alt=""/>
-                            <p>心动应用</p>
+                            <img src="res/2.png" alt=""/>
+                        </div>
+                    </li>
+                    <li class="app_item">
+                        <div>
+                            <img src="res/1.png" alt=""/>
                         </div>
                     </li>
                     <li class="app_item last">
                         <div>
-                            <img src="res/1.png" onclick="openSome(event)" alt=""/>
-                            <p>心动应用</p>
-                        </div>
-                    </li>
-                    <li class="app_item">
-                        <div>
-                            <img src="res/1.png" onclick="openSome(event)" alt=""/>
-                            <p>网址导航</p>
-                        </div>
-                    </li>
-                    <li class="app_item">
-                        <div>
-                            <img src="res/2.png" onclick="openSome(event)" alt=""/>
-                            <p>游戏中心</p>
-                        </div>
-                    </li>
-                    <li class="app_item">
-                        <div>
-                            <img src="res/360.png" onclick="openSome(event)" alt=""/>
-                            <p>心动应用</p>
-                        </div>
-                    </li>
-                    <li class="app_item last">
-                        <div>
-                            <img src="res/1.png" onclick="openSome(event)" alt=""/>
-                            <p>心动应用</p>
+                            <img src="res/1.png" alt=""/>
                         </div>
                     </li>
                 </ul>
+                <div class="divider2"></div>
+                <ul id="link">
+                    <li class="link_item">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fm.baidu.com%2F%3Ffrom%3D381a_pt_mz&key=84b3b10592d8bc2fffdc8bb911f6e248&qt=tz&ver=1&level=1&pos=cydh&page=index_pt&s=1">
+                            <img src="res/1.png" alt=""/>
+                            <p>网址导航</p>
+                        </a>
+                    </li>
+                    <li class="link_item">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fsina.cn%2F&key=8c20624410640628fb13d52be97c6d1e&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">
+                            <img src="res/2.png" alt=""/>
+                            <p>游戏中心</p>
+                        </a>
+                    </li>
+                    <li class="link_item">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fm.sohu.com%2F%3F_trans_%3D000019_hao123&key=0d474cf7cfa9d462e56d73ef45ac14ab&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">
+                            <img src="res/360.png" alt=""/>
+                            <p>心动应用</p>
+                        </a>
+                    </li>
+                    <li class="link_item">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Finfo.3g.qq.com%2F&key=3dd91a0624dc72227ee515659f6e83c6&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">
+                            <img src="res/1.png" alt=""/>
+                            <p>心动应用</p>
+                        </a>
+                    </li>
+                    <li class="link_item last">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2F3g.163.com%2F&key=12deef7d5404d1dec2904052fa0f01f1&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">
+                            <img src="res/1.png" alt=""/>
+                            <p>心动应用</p>
+                        </a>
+                    </li>
+                </ul>
             </div>
+            <table class="link_table">
+                <tr>
+                    <td><a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fclick.union.jd.com%2FJdClick%2F%3FunionId%3D35%26siteid%3Dhao123_mmz%26to%3Dhttp%3A%2F%2Fm.jd.com&key=7419185b004a7c5077722940e7d93f25&qt=tz&ver=1&level=1&pos=cydh&page=index_pt&s=1">京东商城</a></td>
+                    <td>
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fm.yhd.com%2F%3Ffrom%3D123333%26tracker_u%3D10939579768&key=d64c23628556a972db5462c7b42923b4&qt=tz&ver=1&level=1&pos=cydh&page=index_pt&s=1">一号店</a>
+                        <img src="res/hot.png" alt="" class="hot"/>
+                    </td>
+                    <td class="last_td">
+                        <a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fm.taobao.com%2F&key=710ed516505509a0c3b63477a651e25f&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">淘宝</a>
+                        <img src="res/hot.png" alt="" class="hot"/>
+                    </td>
+                </tr>
+                <tr class="last_tr">
+                    <td><a href="http://m.hao123.com/j.php?tn=ops1014166a&url=http%3A%2F%2Fi.ifeng.com%2F&key=bd72f6ebfc3040a364e4949771279e53&qt=tz&ver=1&level=1&pos=cydh&page=index_pt">凤凰网</a></td>
+                    <td><a href="http://m.hao123.com/j.php?z=2&level=1&page=index_h5&ver=2_android&pos=zxkz_n2&category=zxkz_n2%7C5%7Czhzx&qt=tz&url=http%3A%2F%2Fm.news.cn%2F&key=f1a56ea914271fb295ea1834af2234e5">新华网</a></td>
+                    <td class="last_td"><a href="http://m.hao123.com/j.php?z=1&level=1&page=index_pt&ver=1&pos=zxkz&qt=tz&url=http%3A%2F%2Fwap.huanqiu.com&key=3592dfc7acc37947e55f40a2fea74a78">环球网</a></td>
+                </tr>
+            </table>
+        </div>
+        <div id="button_th">
+            <img src="res/ICON.png" alt="button_th"/>
         </div>
 
         <script type="text/javascript" src="cordova.js"></script>
