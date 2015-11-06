@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config version="2.0" >
+    <app className="com.coco.lock2.local.app.blinkCircle.BCActivity" >
+        <viewWrap className="com.coco.lock2.local.app.blinkCircle.BCWrap" />
+        <thumb path="cover.jpg" />
+        <preview path="preview" />
+        <reflection value="true"/>
+        <setting className="" />
+        <author name="cooee" />
+        <updatetime value="2012-11-22" />
+        <introduction>安卓4.0解锁，简单易用。 </introduction>
+        <introductionEn>Android 4.0 Unlock，less is more. </introductionEn>
+    </app> 
+</config>

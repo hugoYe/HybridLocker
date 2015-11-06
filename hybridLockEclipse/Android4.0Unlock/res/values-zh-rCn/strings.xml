@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">安卓4.0解锁</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="charging">正在充电</string>
+    <string name="unread">未读短信%d</string>
+    <string name="misscall">未接电话%d</string>
+</resources>

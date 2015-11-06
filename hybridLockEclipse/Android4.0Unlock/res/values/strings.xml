@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Android 4.0 Unlock</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="charging">charging</string>
+	<string name="unread">Unread messages%d</string>
+    <string name="misscall">Missed call%d</string>
+</resources>

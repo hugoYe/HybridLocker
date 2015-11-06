@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppConfig>
+    <!-- default_lockscreen_package 默认解锁的包-->
+    <item name="default_lockscreen_package" value="com.coco.lock2.local.app.blinkCircle" />
+    
+    <!-- default_lockscreen_class 默认解锁的类-->
+    <item name="default_lockscreen_class" value="com.coco.lock2.local.app.blinkCircle.BCActivity" />
+    
+    <!-- default_lockscreen_wrap 默认解锁的反射名-->
+    <item name="default_lockscreen_wrap" value="com.coco.lock2.local.app.blinkCircle.BCWrap" />
+   
+    <!-- Increaseweek 是否为日期加上星期  true/加上      默认为false        注意要是客户默认时间上有星期显示  就不要再增加星期显示-->
+    <item name="Increaseweek" value="false" />
+    
+    <!-- 时间坐标 -->
+    <item name="timeX" value="0" /> <!-- timeX=0时水平居中显示 -->
+    <item name="timeY" value="140" />
+    <item name="timeFontSize" value="80" /> <!-- 字体大小 -->
+    <item name="ampmX" value="0" /> <!-- ampmX=0时紧跟在时间后面 -->
+    <item name="ampmY" value="140" />
+    <item name="ampmFontSize" value="20" /> <!-- 字体大小 -->
+    <!-- 日期坐标 -->
+    <item name="dataX" value="0" /> <!-- dataX=0时水平居中显示 -->
+    <item name="dataY" value="180" />
+    <item name="dataFontSize" value="20" /> <!-- 字体大小 -->
+    <!-- 未接来电、未读短信坐标 -->
+    <item name="callX" value="0" /> <!-- callX=0时水平居中显示 -->
+    <item name="callY" value="210" />
+    <item name="smsX" value="0" /> <!-- smsX=0时水平居中显示 -->
+    <item name="smsY" value="235" />
+    <item name="fontSize" value="20" /> <!-- 字体大小 -->
+    <!-- 充电状态坐标 -->
+    <item name="chargeX" value="0" /> <!-- chargeX=0时水平居中显示 -->
+    <item name="chargeY" value="275" /> 
+    <item name="chargeFontSize" value="20" /> <!-- 字体大小 -->
+</AppConfig>

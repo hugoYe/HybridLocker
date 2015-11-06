@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ice rain</string>
+    <string name="lock_character1"></string>
+    <string name="lock_character2"></string>
+    <string name="date_format">MMMM d &#160;&#160;EEE</string>
+    <string name="open_notification">Open message notification</string>
+    <string name="notification_explanation">So ice rain lock screen capable of displaying a message notification</string>
+
+</resources>

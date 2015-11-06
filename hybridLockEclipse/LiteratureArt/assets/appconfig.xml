@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppConfig>
+    
+    <!-- isFullScreeen 是否是全屏显示  全屏则不减状态栏高度，不是全屏则减去状态栏高度  默认为false-->
+    <item
+        name="isFullScreen"
+        value="false"/>
+    
+    <!-- 是不是MTK4.2  是true  不是 false -->
+    <item
+        name="isMTK"
+        value="false"/>
+    
+   	<!-- 锁屏背景路径 1 动态换壁纸路径，最优先读取的壁纸路径-->
+    <item
+        name="backgroundPath1"
+        value="/data/data/com.iLoong.base.themebox/lockwallpapers/lock.png"/>
+    
+    <!-- 锁屏背景路径 2 作为默认壁纸路径，次读取的路径，一般为恢复出厂设置不可删掉的路径，无则读取apk自身壁纸-->
+    <item
+        name="backgroundPath2"
+        value="system/lock.png"/>
+    
+    <!-- 充电动画垂直位置 -->
+    <item
+        name="chargeY"
+        value="3"/>
+    
+    <!-- 是否有天气页 -->
+    <item
+        name="hasWeather"
+        value="true" />
+    
+    <!-- 天气客户端包名、类名 -->
+    <item
+        name="weatherPackage"
+        value="com.cooee.widget.samweatherclock" />
+    <item
+        name="weatherClass"
+        value="com.cooee.widget.samweatherclock.MainActivity" />
+    
+    <!-- 是否点击城市名进入天气客户端 -->
+    <item
+        name="clickToWeather"
+        value="false" />
+    
+    <!-- IsYiyunMusic 是否使用依云音乐播放器 fasle 不使用-->
+	<item 
+	    name ="IsYiyunMusic"
+    	value="false"/>
+	
+	<!-- 使用android原生动画类 -->
+   	<item
+   	    name="useAnim"
+   	    value="true"/>
+   	
+   	<!-- 解锁上滑速度 -->
+    <item
+        name="unlockV"
+   	    value="50" />
+    
+    <!-- 碰撞速度 -->
+    <item
+        name="bounceV"
+   	    value="5000" />
+    
+    <!-- 解锁距离  屏幕被分成1280份，越小越容易解锁-->
+    <item
+        name="unlockLen"
+   	    value="300" />
+    
+</AppConfig>

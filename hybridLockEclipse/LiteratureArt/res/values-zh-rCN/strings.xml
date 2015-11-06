@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">冰雨</string>
+    <string name="lock_character1">最美的不是下雨天</string>
+    <string name="lock_character2">是陪你一起躲过的屋檐</string>
+    <string name="date_format">M月d日 &#160;&#160;EEEE</string>
+    <string name="open_notification">开启消息通知</string>
+    <string name="notification_explanation">使冰雨锁屏能够显示消息通知</string>
+
+</resources>
