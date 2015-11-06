@@ -3,27 +3,18 @@ package com.coco.lock2.local.app.lephone;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.coco.lock2.local.app.base.IWrap;
-import com.cooee.hybridlocker.TouchEventPrevent;
+
+import org.apache.cordova.CordovaActivity;
 
 import java.lang.reflect.Method;
 
@@ -32,7 +23,6 @@ public class LockActivity extends Activity {
 
     private LockWrap wrap = null;
 
-    private TouchEventPrevent prevent = new TouchEventPrevent();
 
     @SuppressLint("JavascriptInterface")
     @Override
@@ -56,65 +46,6 @@ public class LockActivity extends Activity {
         });
         wrap.onCreate();
         setContentView(wrap.getView());
-
-        //  cordova begin
-//        View webview = loadWebViewUrl(launchUrl);
-//        webview.setBackgroundColor(Color.TRANSPARENT);
-//        addContentView(webview, (new FrameLayout.LayoutParams(
-//            ViewGroup.LayoutParams.MATCH_PARENT,
-//            ViewGroup.LayoutParams.MATCH_PARENT)));
-        //  cordova end
-
-        // touch demo
-        final WebView webView = new MyWebView(this);
-        webView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                                                             FrameLayout.LayoutParams.MATCH_PARENT));
-        addContentView(webView, (new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT)));
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_asset/testproject/test.html");
-        webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.addJavascriptInterface(new JsInteration(), "control");
-//        webView.setWebChromeClient(new WebChromeClient() {
-//        });
-//        webView.setWebViewClient(new WebViewClient() {
-//
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                super.onPageFinished(view, url);
-//                testMethod(webView);
-//            }
-//
-//        });
-    }
-
-    private void testMethod(WebView webView) {
-        Log.e("", "###### testMethod 111");
-        String call = "javascript:sayHello()";
-//        webView.loadUrl(call);
-//        call = "javascript:alertMessage(\"" + "content" + "\")";
-//        webView.loadUrl(call);
-//        call = "javascript:toastMessage(\"" + "content" + "\")";
-//        webView.loadUrl(call);
-        call = "javascript:sumToJava(1,2)";
-        webView.loadUrl(call);
-        Log.e("", "###### testMethod 222");
-    }
-
-
-    private class MyWebView extends WebView {
-
-        public MyWebView(Context context) {
-            super(context, null);
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            return super.onTouchEvent(event);
-//            return false;
-        }
     }
 
 
@@ -178,17 +109,5 @@ public class LockActivity extends Activity {
         }
     }
 
-    public class JsInteration {
 
-        @JavascriptInterface
-        public void toastMessage(String message) {
-            Toast.makeText(LockActivity.this.getApplicationContext(), message, Toast.LENGTH_LONG)
-                .show();
-        }
-
-        @JavascriptInterface
-        public void onSumResult(int result) {
-            Log.i("", "###### onSumResult result=" + result);
-        }
-    }
 }

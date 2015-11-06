@@ -28,7 +28,6 @@ import android.view.View;
 
 import com.coco.lock2.local.app.base.AppConfig;
 import com.coco.lock2.local.app.base.Assets;
-import com.coco.lock2.local.app.base.IBaseView;
 import com.coco.lock2.local.app.base.Tools;
 import com.cooee.hybridlocker.R;
 import com.cooee.statistics.StatisticsBaseNew;
@@ -41,7 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-public class LockView extends View implements IBaseView {
+public class LockView extends View {
 
     private static final String TAG = "LockView";
     private Context mContext;
@@ -139,6 +138,7 @@ public class LockView extends View implements IBaseView {
             }
         }
     };
+
 
     public LockView(
         Context context,
@@ -431,18 +431,33 @@ public class LockView extends View implements IBaseView {
     }
 
     @Override
-    public boolean onTouchEvent(
-        MotionEvent event) {
-        if (mLockWrap != null) {
-            mLockWrap.resetLight();
-        }
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        Log.i(TAG, "###### LockView dispatchTouchEvent action = " + event.getAction());
+        return super.dispatchTouchEvent(event);
+    }
+
+
+    public void hybridTouchDown(MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
             mShowUnlock = false;
             mTouchDownX = event.getRawX();
             mDrawableUnlock.setAlpha(100);
-            mHideAnimator.start();
-        } else if (action == MotionEvent.ACTION_MOVE) {
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(
+        MotionEvent event) {
+        Log.i(TAG, "######### LockView onTouchEvent action = " + event.getAction());
+        if (mLockWrap != null) {
+            mLockWrap.resetLight();
+        }
+        int action = event.getAction();
+        if (action == MotionEvent.ACTION_MOVE) {
+            if (mHideAnimator != null && !mHideAnimator.isStarted()) {
+                mHideAnimator.start();
+            }
             mMoveX = event.getRawX() - mTouchDownX;
             if (mMoveX <= 0) {
                 mMoveX = 0;
@@ -544,16 +559,20 @@ public class LockView extends View implements IBaseView {
         mLockWrap = lockWrap;
     }
 
-    @Override
+
+    public void onViewCreate() {
+    }
+
+
     public void onViewResume() {
         updateTime();
     }
 
-    @Override
+
     public void onViewPause() {
     }
 
-    @Override
+
     public void onViewDestroy() {
         if (mHideAnimator != null) {
             mHideAnimator.end();

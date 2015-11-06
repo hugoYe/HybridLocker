@@ -33,7 +33,13 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
+        //app.receivedEvent('deviceready');
+        document.addEventListener("backbutton", onBackKeyDown, false);
+
+        //执行初始化状态栏函数
+        initState();
+        plugins.AppsApi.bindFavoriteApp();
+        plugins.EventStatistics.openCentrolCenter();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -47,47 +53,107 @@ var app = {
 
         console.log('Received Event: ' + id);*/
         /** cordova demo end */
+
+
+        document.addEventListener("backbutton", onBackKeyDown, false);
+
         //执行初始化状态栏函数
         initState();
+        plugins.AppsApi.bindFavoriteApp();
     }
 };
-
 app.initialize();
 
+// Handle the back button
+function onBackKeyDown() {
+    console.log("###### onBackKeyDown");
+    slideDown();
+}
 
 
-
-
-var maxHeight,startY,endY,dragLength= 0,translateY;
-var height=$("#slide").height();
+var maxHeight,startY,endY,dragLength= 0,translateY,height,HEIGHT;
 var HEIGHT=document.body.clientHeight;
+var resizeTimer = null;
 $(function() {
-	maxHeight = height * 1;
-	translateY=0;
-	$("#background").bind('touchstart',function(){console.log("touchstart!");});
+    $("#background").bind('touchstart',function(){console.log("touchstart!");plugins.TouchEventPrevent.preventTouchSelf();});
+    translateY=0;
+	//为浏览器绑定事件，当浏览器窗口大小发生变化时执行doResize函数
+	$(window).resize(function(){
+       		resizeTimer = resizeTimer ? null : setTimeout(doResize,0);
+    });
 	$("#state_wifi").bind('click', changeWifiState);
 	$("#state_net").bind('click', changeNetState);
 	$("#state_blue").bind('click', changeBlueState);
 	$("#state_light").bind('click', changeLightState);
 	$("#state_camera").bind('click', changeCameraState);
-	$("#app .app_item img").bind('click', openSome);
+
+	//app图标点击动画
 	$("#app .app_item img").bind('touchstart',function(event){
 		$(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
 		event.stopPropagation();
 	})
-	$("#link .link_item img").bind('click', openSome);
-	$("#link .link_item img").bind('touchstart',function(event){
-		$(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
-		event.stopPropagation();
-	})
 	$("#app .app_item img").bind('touchend',function(event){
-		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+    		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+    		event.stopPropagation();
+    	})
+
+	//状态栏图标点击动画
+	$("#state .state_item div img").bind('touchstart',function(event){
+            $(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
+            event.stopPropagation();
+        })
+    $("#state .state_item div img").bind('touchend',function(event){
+            $(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+            event.stopPropagation();
+        })
+	//为所有a标签加上点击统计事件
+	$("a").bind('click',function(event){
+		plugins.EventStatistics.clickApp();
 		event.stopPropagation();
 	})
+	//为控制中心图标绑定事件
 	$("#button_th").bind('touchstart', dragStart);
 	$("#button_th").bind('touchmove', drag);
 	$("#button_th").bind('touchend',dragEnd);
 })
+
+//初始化app栏,并为每个app绑定openApp函数
+function bindWebFavoriteApp(data){
+	for (var i=0;i<data.app.length&&i<5;i++){
+        var intent = data.app[i].intent;
+        var bitmap = data.app[i].bitmap;
+        if(bitmap != null) {
+            var appimg = document.createElement("img");
+            var div=document.createElement("div");
+            var li=document.createElement("li");
+            var ul=document.getElementById("app");
+            if (i==4){
+                li.className="app_item last";
+            }else {
+                li.className="app_item";
+
+            }
+            appimg.src = "data:image/gif;base64,"+bitmap;
+            $(appimg).bind("click",{intent:intent},openApp);
+            div.appendChild(appimg);
+            li.appendChild(div);
+            ul.appendChild(li);
+        }
+    }
+}
+
+function openApp(event){
+	console.log(event.data.intent);
+	plugins.AppsApi.startApp(event.data.intent);
+	event.stopPropagation();
+}
+
+//重置当前页面高度
+function doResize(){
+	HEIGHT=document.body.clientHeight;
+	height=$("#slide").height();
+    maxHeight = height;
+}
 
 //初始化状态栏函数
 function initState(){
@@ -95,41 +161,23 @@ function initState(){
 	var index;
 	var wifiImg=document.getElementById("state_wifi");
 	var netImg=document.getElementById("state_net");
-	var blueImg=document.getElementById("state_blue");
 	var lightImg=document.getElementById("state_light");
 	var cameraImg=document.getElementById("state_camera");
-	if (isWifiOn()){
-		index=wifiImg.src.lastIndexOf("off");
-		if(index!=-1){
-		    wifiImg.src=wifiImg.src.slice(0,index)+"on.png";
-		}
-	} else {
-	    index=wifiImg.src.lastIndexOf("on");
-	    if(index!=-1){
-            wifiImg.src=wifiImg.src.slice(0,index)+"off.png";
-        }
-	}
-	if (isNetOn()){
-			index=netImg.src.lastIndexOf("off");
-			netImg.src=netImg.src.slice(0,index)+"on.png";
-	}
-	if (isBlueOn()){
-        index=blueImg.src.lastIndexOf("off");
-        if(index!=-1){
-            blueImg.src=blueImg.src.slice(0,index)+"on.png";
-        }
-	} else {
-	    index=blueImg.src.lastIndexOf("on");
-	    if(index!=-1){
-    	    blueImg.src=blueImg.src.slice(0,index)+"off.png";
-    	}
-	}
-	if (isLightOn()){
-        index=lightImg.src.lastIndexOf("off");
-        if(index!=-1){
-            lightImg.src=lightImg.src.slice(0,index)+"on.png";
-        }
-	}
+//	if (isWifiOn()){
+//		index=wifiImg.src.lastIndexOf("off");
+//		if(index!=-1){
+//		    wifiImg.src=wifiImg.src.slice(0,index)+"on.png";
+//		}
+//	} else {
+//	    index=wifiImg.src.lastIndexOf("on");
+//	    if(index!=-1){
+//            wifiImg.src=wifiImg.src.slice(0,index)+"off.png";
+//        }
+//	}
+	isWifiOn();
+	isBlueOn();
+	isNetOn();
+	isLightOn();
 	if (isCameraOn()){
 			index=cameraImg.src.lastIndexOf("off");
 			if(index!=-1){
@@ -140,22 +188,60 @@ function initState(){
 
 //判断wifi是否开启,若是返回true,否则返回false
 function isWifiOn(){
-    var rst;
-    window.WifiWizard.isWifiEnabled(function(res){rst=res;}, function(){});
-
-    return rst;
+    var index;
+    var wifiImg=document.getElementById("state_wifi");
+    plugins.WifiWizard.isWifiEnabled(function(res){
+    		if(res){
+               		index=wifiImg.src.lastIndexOf("off");
+               		if(index!=-1){
+               		wifiImg.src=wifiImg.src.slice(0,index)+"on.png";
+               		}
+               	} else {
+               	    index=wifiImg.src.lastIndexOf("on");
+               	    if(index!=-1){
+                    wifiImg.src=wifiImg.src.slice(0,index)+"off.png";
+                     }
+               	}
+    }, function(){});
 }
 
 
 //判断流量是否开启,若是返回true,否则返回false
 function isNetOn(){
-
+	var index;
+	var netImg=document.getElementById("state_net");
+	plugins.MobileDataWizard.isMobileDataEnabled(function(res){
+		if (res){
+				index=netImg.src.lastIndexOf("off");
+				if(index!=-1){
+					netImg.src=netImg.src.slice(0,index)+"on.png";
+				}
+			} else {
+				index=netImg.src.lastIndexOf("on");
+				if(index!=-1){
+					netImg.src=netImg.src.slice(0,index)+"off.png";
+				}
+			}
+	},function(){});
 }
 
 //判断蓝牙是否开启,若是返回true,否则返回false
 function isBlueOn(){
-//    cordova.plugins.BluetoothStatus.initPlugin();
-    return cordova.plugins.BluetoothStatus.BTenabled;
+	var index;
+    var blueImg=document.getElementById("state_blue");
+    plugins.BluetoothStatus.isBlueEnabled(function(res){
+    	if (res){
+                index=blueImg.src.lastIndexOf("off");
+                if(index!=-1){
+                    blueImg.src=blueImg.src.slice(0,index)+"on.png";
+                }
+        	} else {
+        	    index=blueImg.src.lastIndexOf("on");
+        	    if(index!=-1){
+            	    blueImg.src=blueImg.src.slice(0,index)+"off.png";
+            	}
+        	}
+    },function(){});
 }
 
 //判断手电是否开启,若是返回true,否则返回false
@@ -170,12 +256,12 @@ function isCameraOn(){
 
 //开启wifi
 function setWifiOn(){
-    window.WifiWizard.setWifiEnabled(true,function(res){},function(){});
+    plugins.WifiWizard.setWifiEnabled(true,function(res){},function(){});
 }
 
 //关闭wifi
 function setWifiOff(){
-    window.WifiWizard.setWifiEnabled(false,function(res){},function(){});
+    plugins.WifiWizard.setWifiEnabled(false,function(res){},function(){});
 }
 
 //开启流量
@@ -190,22 +276,22 @@ function setNetOff(){
 
 //开启蓝牙
 function setBlueOn(){
-    cordova.plugins.BluetoothStatus.enableBT();
+    plugins.BluetoothStatus.enableBT();
 }
 
 //关闭蓝牙
 function setBlueOff(){
-    cordova.plugins.BluetoothStatus.disableBT();
+    plugins.BluetoothStatus.disableBT();
 }
 
 //开启手电
 function setLightOn(){
-    window.plugins.flashlight.switchOn();
+    plugins.flashlight.switchOn();
 }
 
 //关闭手电
 function setLightOff(){
-    window.plugins.flashlight.switchOff();
+    plugins.flashlight.switchOff();
 }
 
 //开启摄像头
@@ -222,6 +308,9 @@ function setCameraOff(){
 //开始拖动时执行的函数
 function dragStart(event){
 	event.preventDefault();
+	height=$('#slide').height();
+    maxHeight=height;
+	$("#background").unbind('touchstart');
 	$('#button_th').css({'opacity':0});
 	startY=event.originalEvent.targetTouches[0].pageY;
 	if (translateY!=maxHeight) {
@@ -258,7 +347,7 @@ function drag(event){
 //拖动结束时执行的函数
 function dragEnd(event){
 	$("#slide").css({
-		"transition-duration":"300ms",
+		"transition-duration":"150ms",
 	});
 	if(translateY<=height*0.25){
 		slideDown();
@@ -270,8 +359,9 @@ function dragEnd(event){
 
 //控制中心完全出来后重新为触摸区域绑定的拖动结束后执行的函数
 function upDragEnd(event){
+
 	$("#slide").css({
-		"transition-duration":"300ms",
+		"transition-duration":"150ms",
 	});
 	if (dragLength>0){
 		slideUp();
@@ -283,7 +373,12 @@ function upDragEnd(event){
 
 //控制中心上移动画
 function slideUp(){
-	$('#button_th').css({'opacity':0});
+	$('#button_th').css({'display':'none','opacity':0});
+    //点击背景后将控制中心收起
+    $("#background").click(function(){
+        console.log("click background!!!");
+        slideDown();
+    });
 	$("#button_th").unbind('touchstart');
 	$("#button_th").unbind('touchmove');
 	$("#button_th").unbind('touchend');
@@ -293,6 +388,14 @@ function slideUp(){
 	$(".touch_item").bind('touchstart',dragStart);
 	$(".touch_item").bind('touchmove',drag);
 	$(".touch_item").bind('touchend',upDragEnd);
+	$("#app .app_item img").bind('touchstart',function(event){
+		$(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
+		event.stopPropagation();
+	})
+	$("#app .app_item img").bind('touchend',function(event){
+		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+		event.stopPropagation();
+	})
 	$("#slide").css({
 		"-webkit-transform":"translate3d(0,-100%,0)",
 	});
@@ -302,7 +405,9 @@ function slideUp(){
 
 //控制中心下移动画
 function slideDown(){
-	window.setTimeout("$('#button_th').css({'opacity':1});",300);
+	window.setTimeout("$('#button_th').css({'display':'block','opacity':1});",150);
+	$("#background").unbind('click');
+	$("#background").bind('touchstart',function(){console.log("touchstart!");plugins.TouchEventPrevent.preventTouchSelf();});
 	$(".touch_item").unbind('touchstart');
 	$(".touch_item").unbind('touchmove');
 	$(".touch_item").unbind('touchend');
@@ -317,23 +422,6 @@ function slideDown(){
 	});
 	$("img.touch").css({"-webkit-transform":"rotateZ(180deg)"});
 	translateY=0;
-}
-
-//点击背景后将控制中心收起
-$("#background").click(function(){
-	slideDown();
-})
-
-//点击控制中心其他区域执行的函数
-$("#slide").click(function(){
-	console.log("click!");
-	event.stopPropagation();
-});
-
-//点击app后执行的函数
-function openSome(event){
-	console.log("open");
-	event.stopPropagation();
 }
 
 //改变wifi状态

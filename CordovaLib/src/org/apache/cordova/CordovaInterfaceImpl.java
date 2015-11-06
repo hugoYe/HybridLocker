@@ -20,6 +20,7 @@
 package org.apache.cordova;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,8 @@ import java.util.concurrent.Executors;
 public class CordovaInterfaceImpl implements CordovaInterface {
     private static final String TAG = "CordovaInterfaceImpl";
     protected Activity activity;
+    protected Context context;  // added by Hugo.ye
+    protected CordovaWrap cordovaWrap; // added by Hugo.ye
     protected ExecutorService threadPool;
     protected PluginManager pluginManager;
 
@@ -45,10 +48,23 @@ public class CordovaInterfaceImpl implements CordovaInterface {
         this(activity, Executors.newCachedThreadPool());
     }
 
+
     public CordovaInterfaceImpl(Activity activity, ExecutorService threadPool) {
         this.activity = activity;
         this.threadPool = threadPool;
     }
+
+    // added by Hugo.ye begin
+    public CordovaInterfaceImpl(Context context, CordovaWrap cordovaWrap) {
+        this(context, cordovaWrap, Executors.newCachedThreadPool());
+    }
+
+    public CordovaInterfaceImpl(Context context, CordovaWrap cordovaWrap, ExecutorService threadPool) {
+        this.context = context;
+        this.cordovaWrap = cordovaWrap;
+        this.threadPool = threadPool;
+    }
+    // added by Hugo.ye end
 
     @Override
     public void startActivityForResult(CordovaPlugin command, Intent intent, int requestCode) {
@@ -74,6 +90,16 @@ public class CordovaInterfaceImpl implements CordovaInterface {
     public Activity getActivity() {
         return activity;
     }
+
+    // added by Hugo.ye begin
+    public Context getContext() {
+        return context;
+    }
+
+    public CordovaWrap getCordovaWrap(){
+        return cordovaWrap;
+    }
+    // added by Hugo.ye end
 
     @Override
     public Object onMessage(String id, Object data) {

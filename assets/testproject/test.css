@@ -1,0 +1,88 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  -webkit-user-select: none;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  background: rgba(0, 0, 0, 0);
+}
+#background {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+}
+#slide {
+  position: absolute;
+  height: 60%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  bottom: -55%;
+}
+#slide .touch {
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+#slide .touch img {
+  display: block;
+  margin: 0px auto;
+  width: 8%;
+}
+#state {
+  list-style: none;
+  width: 90%;
+  padding-left: 5%;
+  overflow: hidden;
+}
+#state .state_item {
+  float: left;
+  margin-right: 5%;
+  width: 16%;
+}
+#state .state_item div {
+  display: inline-block;
+  width: 100%;
+}
+#state .state_item div img {
+  width: 100%;
+}
+#state .last {
+  margin-right: 0;
+}
+#app {
+  width: 100%;
+  list-style: none;
+  padding-left: 5%;
+  overflow: hidden;
+}
+#app .app_item {
+  float: left;
+  margin-right: 10%;
+  width: 15%;
+  margin-bottom: 30px;
+}
+#app .app_item div {
+  display: inline-block;
+  width: 100%;
+  text-decoration: none;
+  color: #fff;
+  font-size: 12px;
+}
+#app .app_item div img {
+  width: 100%;
+}
+#app .app_item div p {
+  text-align: center;
+}
+#divider {
+  width: 90%;
+  margin: 30px auto;
+  border-top: 1px solid #fff;
+}
+#app .last {
+		margin-right: 0;
+}

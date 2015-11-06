@@ -34,31 +34,24 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-flashlight/www/Flashlight.js",
-        "id": "cordova-plugin-flashlight.Flashlight",
+        "file": "plugins/com.cooee.cordova.plugins/FlashLight/Flashlight.js",
+        "id": "com.cooee.cordova.plugins.Flashlight",
         "clobbers": [
-            "window.plugins.flashlight"
+            "plugins.flashlight"
         ]
     },
     {
-        "file": "plugins/cordova-connectivity-monitor/www/connectivity.js",
-        "id": "cordova-connectivity-monitor.connectivity",
+        "file": "plugins/com.cooee.cordova.plugins/Bluetooth/BluetoothStatus.js",
+        "id": "com.cooee.cordova.plugins.BluetoothStatus",
         "clobbers": [
-            "window.connectivity"
+            "plugins.BluetoothStatus"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-bluetooth-status/BluetoothStatus.js",
-        "id": "cordova-plugin-bluetooth-status.BluetoothStatus",
+        "file": "plugins/com.cooee.cordova.plugins/wifi/WifiWizard.js",
+        "id": "com.cooee.cordova.plugins.wifiwizard.WifiWizard",
         "clobbers": [
-            "cordova.plugins.BluetoothStatus"
-        ]
-    },
-    {
-        "file": "plugins/com.pylonproducts.wifiwizard/www/WifiWizard.js",
-        "id": "com.pylonproducts.wifiwizard.WifiWizard",
-        "clobbers": [
-            "window.WifiWizard"
+            "plugins.WifiWizard"
         ]
     },
     {
@@ -69,19 +62,26 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-appavailability/www/AppAvailability.js",
-        "id": "cordova-plugin-appavailability.AppAvailability",
+        "file": "plugins/com.cooee.cordova.plugins/AppsApi/AppsApi.js",
+        "id": "cordova-plugin-appsapi.AppsApi",
         "clobbers": [
-            "appAvailability"
+            "plugins.AppsApi"
         ]
     },
     {
-        "file": "plugins/org.jmrezayi2.Applist/www/Applist.js",
-        "id": "org.jmrezayi2.Applist.Applist",
+        "file": "plugins/com.cooee.cordova.plugins/TouchEventPrevent/TouchEventPrevent.js",
+        "id": "cordova-plugin-toucheventprevent.TouchEventPrevent",
         "clobbers": [
-            "window.Applist"
+            "plugins.TouchEventPrevent"
         ]
-    }
+    },
+    {
+        "file": "plugins/com.cooee.cordova.plugins/EventStatistics/EventStatistics.js",
+        "id": "cordova-plugin-eventstatistics.EventStatistics",
+        "clobbers": [
+            "plugins.EventStatistics"
+        ]
+    },
 ];
 module.exports.metadata = 
 // TOP OF METADATA
@@ -89,11 +89,9 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.0.0",
     "cordova-plugin-camera": "1.2.0",
     "cordova-plugin-flashlight": "3.0.0",
-    "cordova-connectivity-monitor": "1.2.2",
     "cordova-plugin-bluetooth-status": "1.0.3",
     "com.pylonproducts.wifiwizard": "0.2.9",
     "cordova-plugin-appavailability": "0.4.2",
-    "org.jmrezayi2.Applist": "0.1.4"
 }
 // BOTTOM OF METADATA
 });

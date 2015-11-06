@@ -27,9 +27,6 @@
     <feature name="Flashlight">
         <param name="android-package" value="com.cooee.cordova.plugins.Flashlight" />
     </feature>
-    <feature name="connectivity">
-        <param name="android-package" value="com.cooee.cordova.plugins.connectivity.Connectivity" />
-    </feature>
     <feature name="BluetoothStatus">
         <param name="android-package" value="com.cooee.cordova.plugins.BluetoothStatus" />
     </feature>
@@ -39,10 +36,13 @@
     <feature name="MobileDataWizard">
         <param name="android-package" value="com.cooee.cordova.plugins.mobiledata.MobileDataWizard" />
     </feature>
-    <feature name="AppAvailability">
-        <param name="android-package" value="com.ohh2ahh.appavailability.AppAvailability" />
+    <feature name="AppsApi">
+        <param name="android-package" value="com.cooee.cordova.plugins.AppsApi" />
     </feature>
-    <feature name="Applist">
-        <param name="android-package" value="org.jmrezayi2.Applist.Applist" />
+    <feature name="TouchEventPrevent">
+        <param name="android-package" value="com.cooee.cordova.plugins.TouchEventPrevent" />
+    </feature>
+    <feature name="EventStatistics">
+        <param name="android-package" value="com.cooee.cordova.plugins.EventStatistics" />
     </feature>
 </widget>

@@ -41,8 +41,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Main class for interacting with a Cordova webview. Manages plugins, events, and a CordovaWebViewEngine.
- * Class uses two-phase initialization. You must call init() before calling any other methods.
+ * Main class for interacting with a Cordova webview. Manages plugins, events, and a
+ * CordovaWebViewEngine. Class uses two-phase initialization. You must call init() before calling
+ * any other methods.
  */
 public class CordovaWebViewImpl implements CordovaWebView {
 
@@ -66,17 +67,24 @@ public class CordovaWebViewImpl implements CordovaWebView {
     // The URL passed to loadUrl(), not necessarily the URL of the current page.
     String loadedUrl;
 
-    /** custom view created by the browser (a video player for example) */
+    /**
+     * custom view created by the browser (a video player for example)
+     */
     private View mCustomView;
     private WebChromeClient.CustomViewCallback mCustomViewCallback;
 
     private Set<Integer> boundKeyCodes = new HashSet<Integer>();
 
-    public static CordovaWebViewEngine createEngine(Context context, CordovaPreferences preferences) {
-        String className = preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
+    public static CordovaWebViewEngine createEngine(Context context,
+                                                    CordovaPreferences preferences) {
+        String
+            className =
+            preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
         try {
             Class<?> webViewClass = Class.forName(className);
-            Constructor<?> constructor = webViewClass.getConstructor(Context.class, CordovaPreferences.class);
+            Constructor<?>
+                constructor =
+                webViewClass.getConstructor(Context.class, CordovaPreferences.class);
             return (CordovaWebViewEngine) constructor.newInstance(context, preferences);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create webview. ", e);
@@ -93,7 +101,8 @@ public class CordovaWebViewImpl implements CordovaWebView {
     }
 
     @Override
-    public void init(CordovaInterface cordova, List<PluginEntry> pluginEntries, CordovaPreferences preferences) {
+    public void init(CordovaInterface cordova, List<PluginEntry> pluginEntries,
+                     CordovaPreferences preferences) {
         if (this.cordova != null) {
             throw new IllegalStateException();
         }
@@ -103,12 +112,14 @@ public class CordovaWebViewImpl implements CordovaWebView {
         resourceApi = new CordovaResourceApi(engine.getView().getContext(), pluginManager);
         nativeToJsMessageQueue = new NativeToJsMessageQueue();
         nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.NoOpBridgeMode());
-        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.LoadUrlBridgeMode(engine, cordova));
+        nativeToJsMessageQueue
+            .addBridgeMode(new NativeToJsMessageQueue.LoadUrlBridgeMode(engine, cordova));
 
         if (preferences.getBoolean("DisallowOverscroll", false)) {
             engine.getView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
-        engine.init(this, cordova, engineClient, resourceApi, pluginManager, nativeToJsMessageQueue);
+        engine
+            .init(this, cordova, engineClient, resourceApi, pluginManager, nativeToJsMessageQueue);
         // This isn't enforced by the compiler, so assert here.
         assert engine.getView() instanceof CordovaWebViewEngine.EngineView;
 
@@ -176,20 +187,37 @@ public class CordovaWebViewImpl implements CordovaWebView {
 
                 // If timeout, then stop loading and handle error
                 if (loadUrlTimeout == currentLoadUrlTimeout) {
-                    cordova.getActivity().runOnUiThread(loadError);
+                    if (cordova.getActivity() != null) {
+                        cordova.getActivity().runOnUiThread(loadError);
+                    } else if (cordova.getCordovaWrap() != null) {
+                        cordova.getCordovaWrap().runOnUiThread(loadError);
+                    }
+
                 }
             }
         };
 
         final boolean _recreatePlugins = recreatePlugins;
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                if (loadUrlTimeoutValue > 0) {
-                    cordova.getThreadPool().execute(timeoutCheck);
+        if (cordova.getActivity() != null) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    if (loadUrlTimeoutValue > 0) {
+                        cordova.getThreadPool().execute(timeoutCheck);
+                    }
+                    engine.loadUrl(url, _recreatePlugins);
                 }
-                engine.loadUrl(url, _recreatePlugins);
-            }
-        });
+            });
+        } else if (cordova.getCordovaWrap() != null) {
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                public void run() {
+                    if (loadUrlTimeoutValue > 0) {
+                        cordova.getThreadPool().execute(timeoutCheck);
+                    }
+                    engine.loadUrl(url, _recreatePlugins);
+                }
+            });
+        }
+
     }
 
 
@@ -199,7 +227,8 @@ public class CordovaWebViewImpl implements CordovaWebView {
     }
 
     @Override
-    public void showWebPage(String url, boolean openExternal, boolean clearHistory, Map<String, Object> params) {
+    public void showWebPage(String url, boolean openExternal, boolean clearHistory,
+                            Map<String, Object> params) {
         LOG.d(TAG, "showWebPage(%s, %b, %b, HashMap)", url, openExternal, clearHistory);
 
         // If clearing history
@@ -215,11 +244,15 @@ public class CordovaWebViewImpl implements CordovaWebView {
                 // Load new URL
                 loadUrlIntoView(url, true);
             } else {
-                LOG.w(TAG, "showWebPage: Refusing to load URL into webview since it is not in the <allow-navigation> whitelist. URL=" + url);
+                LOG.w(TAG,
+                      "showWebPage: Refusing to load URL into webview since it is not in the <allow-navigation> whitelist. URL="
+                      + url);
             }
         }
         if (!pluginManager.shouldOpenExternalUrl(url)) {
-            LOG.w(TAG, "showWebPage: Refusing to send intent for URL since it is not in the <allow-intent> whitelist. URL=" + url);
+            LOG.w(TAG,
+                  "showWebPage: Refusing to send intent for URL since it is not in the <allow-intent> whitelist. URL="
+                  + url);
             return;
         }
         try {
@@ -234,7 +267,12 @@ public class CordovaWebViewImpl implements CordovaWebView {
             } else {
                 intent.setData(uri);
             }
-            cordova.getActivity().startActivity(intent);
+            if (cordova.getActivity() != null) {
+                cordova.getActivity().startActivity(intent);
+            } else if (cordova.getContext() != null) {
+                cordova.getContext().startActivity(intent);
+            }
+
         } catch (android.content.ActivityNotFoundException e) {
             LOG.e(TAG, "Error loading url " + url, e);
         }
@@ -258,9 +296,9 @@ public class CordovaWebViewImpl implements CordovaWebView {
         // Add the custom view to its container.
         ViewGroup parent = (ViewGroup) engine.getView().getParent();
         parent.addView(view, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER));
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            Gravity.CENTER));
 
         // Hide the content view.
         engine.getView().setVisibility(View.GONE);
@@ -274,7 +312,9 @@ public class CordovaWebViewImpl implements CordovaWebView {
     @Deprecated
     public void hideCustomView() {
         // This code is adapted from the original Android Browser code, licensed under the Apache License, Version 2.0
-        if (mCustomView == null) return;
+        if (mCustomView == null) {
+            return;
+        }
         Log.d(TAG, "Hiding Custom View");
 
         // Hide the custom view.
@@ -311,26 +351,32 @@ public class CordovaWebViewImpl implements CordovaWebView {
     public PluginManager getPluginManager() {
         return pluginManager;
     }
+
     @Override
     public CordovaPreferences getPreferences() {
         return preferences;
     }
+
     @Override
     public ICordovaCookieManager getCookieManager() {
         return engine.getCookieManager();
     }
+
     @Override
     public CordovaResourceApi getResourceApi() {
         return resourceApi;
     }
+
     @Override
     public CordovaWebViewEngine getEngine() {
         return engine;
     }
+
     @Override
     public View getView() {
         return engine.getView();
     }
+
     @Override
     public Context getContext() {
         return engine.getView().getContext();
@@ -338,7 +384,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
 
     private void sendJavascriptEvent(String event) {
         if (appPlugin == null) {
-            appPlugin = (CoreAndroid)pluginManager.getPlugin(CoreAndroid.PLUGIN_NAME);
+            appPlugin = (CoreAndroid) pluginManager.getPlugin(CoreAndroid.PLUGIN_NAME);
         }
 
         if (appPlugin == null) {
@@ -421,6 +467,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
             this.pluginManager.onNewIntent(intent);
         }
     }
+
     @Override
     public void handlePause(boolean keepRunning) {
         if (!isInitialized()) {
@@ -436,6 +483,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
             engine.setPaused(true);
         }
     }
+
     @Override
     public void handleResume(boolean keepRunning) {
         if (!isInitialized()) {
@@ -450,6 +498,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
             sendJavascriptEvent("resume");
         }
     }
+
     @Override
     public void handleStart() {
         if (!isInitialized()) {
@@ -457,6 +506,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
         }
         pluginManager.onStart();
     }
+
     @Override
     public void handleStop() {
         if (!isInitialized()) {
@@ -464,6 +514,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
         }
         pluginManager.onStop();
     }
+
     @Override
     public void handleDestroy() {
         if (!isInitialized()) {
@@ -485,6 +536,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
     }
 
     protected class EngineClient implements CordovaWebViewEngine.Client {
+
         @Override
         public void clearLoadTimeoutTimer() {
             loadUrlTimeout++;
@@ -527,11 +579,20 @@ public class CordovaWebViewImpl implements CordovaWebView {
                     public void run() {
                         try {
                             Thread.sleep(2000);
-                            cordova.getActivity().runOnUiThread(new Runnable() {
-                                public void run() {
-                                    pluginManager.postMessage("spinner", "stop");
-                                }
-                            });
+                            if (cordova.getActivity() != null) {
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pluginManager.postMessage("spinner", "stop");
+                                    }
+                                });
+                            } else if (cordova.getCordovaWrap() != null) {
+                                cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pluginManager.postMessage("spinner", "stop");
+                                    }
+                                });
+                            }
+
                         } catch (InterruptedException e) {
                         }
                     }

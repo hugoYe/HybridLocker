@@ -19,16 +19,15 @@
 
 package org.apache.cordova;
 
-import java.util.List;
-
 import android.app.Activity;
-import android.util.Log;
+
+import java.util.List;
 
 @Deprecated // Use Whitelist, CordovaPrefences, etc. directly.
 public class Config {
     private static final String TAG = "Config";
 
-    static ConfigXmlParser parser;
+    public static ConfigXmlParser parser;
 
     private Config() {
     }

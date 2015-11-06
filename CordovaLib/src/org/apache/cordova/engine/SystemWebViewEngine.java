@@ -48,14 +48,15 @@ import java.lang.reflect.Method;
 
 
 /**
- * Glue class between CordovaWebView (main Cordova logic) and SystemWebView (the actual View).
- * We make the Engine separate from the actual View so that:
- *  A) We don't need to worry about WebView methods clashing with CordovaWebViewEngine methods
- *     (e.g.: goBack() is void for WebView, and boolean for CordovaWebViewEngine)
- *  B) Separating the actual View from the Engine makes API surfaces smaller.
- * Class uses two-phase initialization. However, CordovaWebView is responsible for calling .init().
+ * Glue class between CordovaWebView (main Cordova logic) and SystemWebView (the actual View). We
+ * make the Engine separate from the actual View so that: A) We don't need to worry about WebView
+ * methods clashing with CordovaWebViewEngine methods (e.g.: goBack() is void for WebView, and
+ * boolean for CordovaWebViewEngine) B) Separating the actual View from the Engine makes API
+ * surfaces smaller. Class uses two-phase initialization. However, CordovaWebView is responsible for
+ * calling .init().
  */
 public class SystemWebViewEngine implements CordovaWebViewEngine {
+
     public static final String TAG = "SystemWebViewEngine";
 
     protected final SystemWebView webView;
@@ -70,9 +71,9 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
     protected NativeToJsMessageQueue nativeToJsMessageQueue;
     private BroadcastReceiver receiver;
 
-    public static TouchEventHelper touchEventHelper = new TouchEventHelper();;
-
-    /** Used when created via reflection. */
+    /**
+     * Used when created via reflection.
+     */
     public SystemWebViewEngine(Context context, CordovaPreferences preferences) {
         this(new SystemWebView(context), preferences);
     }
@@ -88,9 +89,10 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
     }
 
     @Override
-    public void init(CordovaWebView parentWebView, CordovaInterface cordova, CordovaWebViewEngine.Client client,
-              CordovaResourceApi resourceApi, PluginManager pluginManager,
-              NativeToJsMessageQueue nativeToJsMessageQueue) {
+    public void init(CordovaWebView parentWebView, CordovaInterface cordova,
+                     CordovaWebViewEngine.Client client,
+                     CordovaResourceApi resourceApi, PluginManager pluginManager,
+                     NativeToJsMessageQueue nativeToJsMessageQueue) {
         if (this.cordova != null) {
             throw new IllegalStateException();
         }
@@ -108,16 +110,23 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
 
         initWebViewSettings();
 
-        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
-            @Override
-            public void setNetworkAvailable(boolean value) {
-                webView.setNetworkAvailable(value);
-            }
-            @Override
-            public void runOnUiThread(Runnable r) {
-                SystemWebViewEngine.this.cordova.getActivity().runOnUiThread(r);
-            }
-        }));
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(
+            new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
+                @Override
+                public void setNetworkAvailable(boolean value) {
+                    webView.setNetworkAvailable(value);
+                }
+
+                @Override
+                public void runOnUiThread(Runnable r) {
+                    if (SystemWebViewEngine.this.cordova.getActivity() != null) {
+                        SystemWebViewEngine.this.cordova.getActivity().runOnUiThread(r);
+                    } else if (SystemWebViewEngine.this.cordova.getCordovaWrap() != null) {
+                        SystemWebViewEngine.this.cordova.getCordovaWrap().runOnUiThread(r);
+                    }
+
+                }
+            }));
         bridge = new CordovaBridge(pluginManager, nativeToJsMessageQueue);
         exposeJsInterface(webView, bridge);
     }
@@ -147,32 +156,36 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
-        
+
         // Set the nav dump for HTC 2.x devices (disabling for ICS, deprecated entirely for Jellybean 4.2)
         try {
-            Method gingerbread_getMethod =  WebSettings.class.getMethod("setNavDump", new Class[] { boolean.class });
-            
+            Method
+                gingerbread_getMethod =
+                WebSettings.class.getMethod("setNavDump", new Class[]{boolean.class});
+
             String manufacturer = android.os.Build.MANUFACTURER;
             Log.d(TAG, "CordovaWebView is running on device made by: " + manufacturer);
-            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB &&
-                    android.os.Build.MANUFACTURER.contains("HTC"))
-            {
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB &&
+                android.os.Build.MANUFACTURER.contains("HTC")) {
                 gingerbread_getMethod.invoke(settings, true);
             }
         } catch (NoSuchMethodException e) {
-            Log.d(TAG, "We are on a modern version of Android, we will deprecate HTC 2.3 devices in 2.8");
+            Log.d(TAG,
+                  "We are on a modern version of Android, we will deprecate HTC 2.3 devices in 2.8");
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "Doing the NavDump failed with bad arguments");
         } catch (IllegalAccessException e) {
-            Log.d(TAG, "This should never happen: IllegalAccessException means this isn't Android anymore");
+            Log.d(TAG,
+                  "This should never happen: IllegalAccessException means this isn't Android anymore");
         } catch (InvocationTargetException e) {
-            Log.d(TAG, "This should never happen: InvocationTargetException means this isn't Android anymore.");
+            Log.d(TAG,
+                  "This should never happen: InvocationTargetException means this isn't Android anymore.");
         }
 
         //We don't save any form data in the application
         settings.setSaveFormData(false);
         settings.setSavePassword(false);
-        
+
         // Jellybean rightfully tried to lock this down. Too bad they didn't give us a whitelist
         // while we do this
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
@@ -183,18 +196,20 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         }
         // Enable database
         // We keep this disabled because we use or shim to get around DOM_EXCEPTION_ERROR_16
-        String databasePath = webView.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
+        String
+            databasePath =
+            webView.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE)
+                .getPath();
         settings.setDatabaseEnabled(true);
         settings.setDatabasePath(databasePath);
-        
-        
+
         //Determine whether we're in debug or release mode, and turn on Debugging!
         ApplicationInfo appInfo = webView.getContext().getApplicationContext().getApplicationInfo();
         if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
             android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             enableRemoteDebugging();
         }
-        
+
         settings.setGeolocationDatabasePath(databasePath);
 
         // Enable DOM storage
@@ -202,13 +217,13 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
 
         // Enable built-in geolocation
         settings.setGeolocationEnabled(true);
-        
+
         // Enable AppCache
         // Fix for CB-2282
         settings.setAppCacheMaxSize(5 * 1048576);
         settings.setAppCachePath(databasePath);
         settings.setAppCacheEnabled(true);
-        
+
         // Fix for CB-1405
         // Google issue 4641
         String defaultUserAgent = settings.getUserAgentString();
@@ -224,7 +239,7 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
             }
         }
         // End CB-3360
-        
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         if (this.receiver == null) {
@@ -255,7 +270,7 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
             // Bug being that Java Strings do not get converted to JS strings automatically.
             // This isn't hard to work-around on the JS side, but it's easier to just
             // use the prompt bridge instead.
-            return;            
+            return;
         }
         SystemExposedJsApi exposedJsApi = new SystemExposedJsApi(bridge);
         webView.addJavascriptInterface(exposedJsApi, "_cordovaNative");
