@@ -179,8 +179,8 @@ public class FrameContainer extends FrameLayout implements IBaseView {
         mCordovaWrap.launchUrl = "file:///" + mRemoteContext.getFilesDir() + "/"
                 + "www" + "/index.html";
         mWebView = (WebView) mCordovaWrap.loadWebViewUrl(mCordovaWrap.launchUrl);
-        mWebView.setBackgroundColor(0x50000000);
-        mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 900));
+        mWebView.setBackgroundColor(0x00000000);
+        mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1100));
         addView(mWebView);
 
         lockView.onViewCreate();
