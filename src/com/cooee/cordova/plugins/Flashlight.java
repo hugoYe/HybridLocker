@@ -13,6 +13,8 @@ import org.json.JSONException;
 
 public class Flashlight extends CordovaPlugin {
 
+    private static final String  TAG = "FlashlightPlugin";
+
     private static final String ACTION_AVAILABLE = "available";
     private static final String ACTION_SWITCH_ON = "switchOn";
     private static final String ACTION_SWITCH_OFF = "switchOff";
@@ -24,7 +26,7 @@ public class Flashlight extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
         throws JSONException {
-        Log.d("Flashlight", "Plugin Called: " + action);
+        Log.d(TAG, "Plugin Called: " + action);
         try {
             if (action.equals(ACTION_SWITCH_ON)) {
                 // When switching on immediately after checking for isAvailable,

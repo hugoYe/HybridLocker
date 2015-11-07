@@ -75,21 +75,38 @@ public class CordovaWebViewImpl implements CordovaWebView {
 
     private Set<Integer> boundKeyCodes = new HashSet<Integer>();
 
+    private static Context mRemoteContext; // added by Hugo.ye
+
     public static CordovaWebViewEngine createEngine(Context context,
                                                     CordovaPreferences preferences) {
-        String
-            className =
-            preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
+        String className = preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
         try {
             Class<?> webViewClass = Class.forName(className);
             Constructor<?>
-                constructor =
-                webViewClass.getConstructor(Context.class, CordovaPreferences.class);
+                    constructor =
+                    webViewClass.getConstructor(Context.class, CordovaPreferences.class);
             return (CordovaWebViewEngine) constructor.newInstance(context, preferences);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create webview. ", e);
         }
     }
+
+    // added by Hugo.ye begin
+    public static CordovaWebViewEngine createEngineWrap(Context context, Context remoteContext,
+                                                        CordovaPreferences preferences) {
+        mRemoteContext = remoteContext;
+        String className = preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
+        try {
+            Class<?> webViewClass = Class.forName(className);
+            Constructor<?>
+                    constructor =
+                    webViewClass.getConstructor(Context.class, Context.class, CordovaPreferences.class);
+            return (CordovaWebViewEngine) constructor.newInstance(context, remoteContext, preferences);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create webview. ", e);
+        }
+    }
+    // added by Hugo.ye end
 
     public CordovaWebViewImpl(CordovaWebViewEngine cordovaWebViewEngine) {
         this.engine = cordovaWebViewEngine;
@@ -109,17 +126,21 @@ public class CordovaWebViewImpl implements CordovaWebView {
         this.cordova = cordova;
         this.preferences = preferences;
         pluginManager = new PluginManager(this, this.cordova, pluginEntries);
-        resourceApi = new CordovaResourceApi(engine.getView().getContext(), pluginManager);
+        if (mRemoteContext != null) {
+            resourceApi = new CordovaResourceApi(mRemoteContext, pluginManager);
+        } else {
+            resourceApi = new CordovaResourceApi(engine.getView().getContext(), pluginManager);
+        }
         nativeToJsMessageQueue = new NativeToJsMessageQueue();
         nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.NoOpBridgeMode());
         nativeToJsMessageQueue
-            .addBridgeMode(new NativeToJsMessageQueue.LoadUrlBridgeMode(engine, cordova));
+                .addBridgeMode(new NativeToJsMessageQueue.LoadUrlBridgeMode(engine, cordova));
 
         if (preferences.getBoolean("DisallowOverscroll", false)) {
             engine.getView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
         engine
-            .init(this, cordova, engineClient, resourceApi, pluginManager, nativeToJsMessageQueue);
+                .init(this, cordova, engineClient, resourceApi, pluginManager, nativeToJsMessageQueue);
         // This isn't enforced by the compiler, so assert here.
         assert engine.getView() instanceof CordovaWebViewEngine.EngineView;
 
@@ -245,14 +266,14 @@ public class CordovaWebViewImpl implements CordovaWebView {
                 loadUrlIntoView(url, true);
             } else {
                 LOG.w(TAG,
-                      "showWebPage: Refusing to load URL into webview since it is not in the <allow-navigation> whitelist. URL="
-                      + url);
+                        "showWebPage: Refusing to load URL into webview since it is not in the <allow-navigation> whitelist. URL="
+                                + url);
             }
         }
         if (!pluginManager.shouldOpenExternalUrl(url)) {
             LOG.w(TAG,
-                  "showWebPage: Refusing to send intent for URL since it is not in the <allow-intent> whitelist. URL="
-                  + url);
+                    "showWebPage: Refusing to send intent for URL since it is not in the <allow-intent> whitelist. URL="
+                            + url);
             return;
         }
         try {
@@ -296,9 +317,9 @@ public class CordovaWebViewImpl implements CordovaWebView {
         // Add the custom view to its container.
         ViewGroup parent = (ViewGroup) engine.getView().getParent();
         parent.addView(view, new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            Gravity.CENTER));
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER));
 
         // Hide the content view.
         engine.getView().setVisibility(View.GONE);

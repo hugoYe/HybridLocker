@@ -70,7 +70,9 @@ public class CordovaInterfaceImpl implements CordovaInterface {
     public void startActivityForResult(CordovaPlugin command, Intent intent, int requestCode) {
         setActivityResultCallback(command);
         try {
-            activity.startActivityForResult(intent, requestCode);
+            if(activity!=null) {
+                activity.startActivityForResult(intent, requestCode);
+            }
         } catch (RuntimeException e) { // E.g.: ActivityNotFoundException
             activityResultCallback = null;
             throw e;
@@ -96,7 +98,7 @@ public class CordovaInterfaceImpl implements CordovaInterface {
         return context;
     }
 
-    public CordovaWrap getCordovaWrap(){
+    public CordovaWrap getCordovaWrap() {
         return cordovaWrap;
     }
     // added by Hugo.ye end
@@ -104,7 +106,9 @@ public class CordovaInterfaceImpl implements CordovaInterface {
     @Override
     public Object onMessage(String id, Object data) {
         if ("exit".equals(id)) {
-            activity.finish();
+            if (activity != null) {
+                activity.finish();
+            }
         }
         return null;
     }
@@ -129,7 +133,7 @@ public class CordovaInterfaceImpl implements CordovaInterface {
      */
     public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
         CordovaPlugin callback = activityResultCallback;
-        if(callback == null && initCallbackService != null) {
+        if (callback == null && initCallbackService != null) {
             // The application was restarted, but had defined an initial callback
             // before being shut down.
             savedResult = new ActivityResultHolder(requestCode, resultCode, intent);
@@ -146,7 +150,7 @@ public class CordovaInterfaceImpl implements CordovaInterface {
             callback.onActivityResult(requestCode, resultCode, intent);
             return true;
         }
-        Log.w(TAG, "Got an activity result, but no plugin was registered to receive it" + (savedResult != null ? " yet!": "."));
+        Log.w(TAG, "Got an activity result, but no plugin was registered to receive it" + (savedResult != null ? " yet!" : "."));
         return false;
     }
 

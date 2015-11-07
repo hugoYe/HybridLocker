@@ -52,8 +52,8 @@ public class LockView extends View {
     private float mScreenWidth = 0;
     private float mScreenHeight = 0;
     private float mScaleX = 0;
-    private Runnable mExitFunc = null;
-    private LockWrap mLockWrap = null;
+
+
     private float TIME_X = 0;
     private static float TIME_Y = 295;
     private static float TIME_GAP = 14;
@@ -173,7 +173,7 @@ public class LockView extends View {
 
             @Override
             public void onAnimationUpdate(
-                ValueAnimator animation) {
+                    ValueAnimator animation) {
                 int value = (Integer) animation.getAnimatedValue();
                 Log.i("test", "value: " + value);
                 if (mDrawableUnlock != null) {
@@ -449,10 +449,8 @@ public class LockView extends View {
     @Override
     public boolean onTouchEvent(
         MotionEvent event) {
-        Log.i(TAG, "######### LockView onTouchEvent action = " + event.getAction());
-        if (mLockWrap != null) {
-            mLockWrap.resetLight();
-        }
+//        Log.i(TAG, "######### LockView onTouchEvent action = " + event.getAction());
+        LockWrap.resetLight();
         int action = event.getAction();
         if (action == MotionEvent.ACTION_MOVE) {
             if (mHideAnimator != null && !mHideAnimator.isStarted()) {
@@ -465,7 +463,7 @@ public class LockView extends View {
             postInvalidate();
         } else if (action == MotionEvent.ACTION_UP) {
             if (mMoveX > mAppConfig.unlockDis() * mScaleX) {
-                mExitFunc.run();
+                LockWrap.unLock();
             } else {
                 mShowUnlock = true;
                 mMoveX = 0;
@@ -547,16 +545,6 @@ public class LockView extends View {
         options.inPurgeable = true;
         options.inInputShareable = true;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-    }
-
-    public void setExitFunction(
-        Runnable runnable) {
-        mExitFunc = runnable;
-    }
-
-    public void setWrap(
-        LockWrap lockWrap) {
-        mLockWrap = lockWrap;
     }
 
 

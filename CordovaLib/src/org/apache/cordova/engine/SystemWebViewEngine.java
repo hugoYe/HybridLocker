@@ -71,6 +71,8 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
     protected NativeToJsMessageQueue nativeToJsMessageQueue;
     private BroadcastReceiver receiver;
 
+    private Context mRemoteContext; // added by Hugo.ye
+
     /**
      * Used when created via reflection.
      */
@@ -78,9 +80,23 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         this(new SystemWebView(context), preferences);
     }
 
+    // added by Hugo.ye begin
+    public SystemWebViewEngine(Context context, Context remoteContext, CordovaPreferences preferences) {
+        mRemoteContext = remoteContext;
+        if (remoteContext != null) {
+            this.webView = new SystemWebView(remoteContext);
+        } else {
+            this.webView = new SystemWebView(context);
+        }
+        this.preferences = preferences;
+        cookieManager = new SystemCookieManager(webView);
+    }
+    // added by Hugo.ye end
+
     public SystemWebViewEngine(SystemWebView webView) {
         this(webView, null);
     }
+
 
     public SystemWebViewEngine(SystemWebView webView, CordovaPreferences preferences) {
         this.preferences = preferences;
@@ -111,22 +127,22 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         initWebViewSettings();
 
         nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(
-            new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
-                @Override
-                public void setNetworkAvailable(boolean value) {
-                    webView.setNetworkAvailable(value);
-                }
-
-                @Override
-                public void runOnUiThread(Runnable r) {
-                    if (SystemWebViewEngine.this.cordova.getActivity() != null) {
-                        SystemWebViewEngine.this.cordova.getActivity().runOnUiThread(r);
-                    } else if (SystemWebViewEngine.this.cordova.getCordovaWrap() != null) {
-                        SystemWebViewEngine.this.cordova.getCordovaWrap().runOnUiThread(r);
+                new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
+                    @Override
+                    public void setNetworkAvailable(boolean value) {
+                        webView.setNetworkAvailable(value);
                     }
 
-                }
-            }));
+                    @Override
+                    public void runOnUiThread(Runnable r) {
+                        if (SystemWebViewEngine.this.cordova.getActivity() != null) {
+                            SystemWebViewEngine.this.cordova.getActivity().runOnUiThread(r);
+                        } else if (SystemWebViewEngine.this.cordova.getCordovaWrap() != null) {
+                            SystemWebViewEngine.this.cordova.getCordovaWrap().runOnUiThread(r);
+                        }
+
+                    }
+                }));
         bridge = new CordovaBridge(pluginManager, nativeToJsMessageQueue);
         exposeJsInterface(webView, bridge);
     }
@@ -160,26 +176,26 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         // Set the nav dump for HTC 2.x devices (disabling for ICS, deprecated entirely for Jellybean 4.2)
         try {
             Method
-                gingerbread_getMethod =
-                WebSettings.class.getMethod("setNavDump", new Class[]{boolean.class});
+                    gingerbread_getMethod =
+                    WebSettings.class.getMethod("setNavDump", new Class[]{boolean.class});
 
             String manufacturer = android.os.Build.MANUFACTURER;
             Log.d(TAG, "CordovaWebView is running on device made by: " + manufacturer);
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB &&
-                android.os.Build.MANUFACTURER.contains("HTC")) {
+                    android.os.Build.MANUFACTURER.contains("HTC")) {
                 gingerbread_getMethod.invoke(settings, true);
             }
         } catch (NoSuchMethodException e) {
             Log.d(TAG,
-                  "We are on a modern version of Android, we will deprecate HTC 2.3 devices in 2.8");
+                    "We are on a modern version of Android, we will deprecate HTC 2.3 devices in 2.8");
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "Doing the NavDump failed with bad arguments");
         } catch (IllegalAccessException e) {
             Log.d(TAG,
-                  "This should never happen: IllegalAccessException means this isn't Android anymore");
+                    "This should never happen: IllegalAccessException means this isn't Android anymore");
         } catch (InvocationTargetException e) {
             Log.d(TAG,
-                  "This should never happen: InvocationTargetException means this isn't Android anymore.");
+                    "This should never happen: InvocationTargetException means this isn't Android anymore.");
         }
 
         //We don't save any form data in the application
@@ -197,16 +213,16 @@ public class SystemWebViewEngine implements CordovaWebViewEngine {
         // Enable database
         // We keep this disabled because we use or shim to get around DOM_EXCEPTION_ERROR_16
         String
-            databasePath =
-            webView.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE)
-                .getPath();
+                databasePath =
+                webView.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE)
+                        .getPath();
         settings.setDatabaseEnabled(true);
         settings.setDatabasePath(databasePath);
 
         //Determine whether we're in debug or release mode, and turn on Debugging!
         ApplicationInfo appInfo = webView.getContext().getApplicationContext().getApplicationInfo();
         if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
-            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             enableRemoteDebugging();
         }
 

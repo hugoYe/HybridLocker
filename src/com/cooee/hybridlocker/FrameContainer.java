@@ -36,9 +36,6 @@ public class FrameContainer extends FrameLayout implements IBaseView {
 
     private LockView lockView;
 
-    private Runnable mExitFunc = null;
-    private LockWrap mLockWrap = null;
-
 
     private JsInteration jsInteration = new JsInteration();
 
@@ -51,7 +48,6 @@ public class FrameContainer extends FrameLayout implements IBaseView {
         mRemoteContext = remoteContext;
         setBackgroundColor(Color.RED);
     }
-
 
 
     private CordovaWrap mCordovaWrap;
@@ -136,14 +132,14 @@ public class FrameContainer extends FrameLayout implements IBaseView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.i(TAG, "###### FrameContainer dispatchTouchEvent action = " + ev.getAction());
+//        Log.i(TAG, "###### FrameContainer dispatchTouchEvent action = " + ev.getAction());
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             lockView.hybridTouchDown(ev);
         }
 
         if (TouchEventPrevent.preventWebTouchEvent) {
-            Log.i(TAG, "###### FrameContainer dispatchTouchEvent action = " + ev.getAction());
+//            Log.i(TAG, "###### FrameContainer dispatchTouchEvent action = " + ev.getAction());
             lockView.onTouchEvent(ev);
 
             if (ev.getAction() == MotionEvent.ACTION_UP) {
@@ -164,35 +160,27 @@ public class FrameContainer extends FrameLayout implements IBaseView {
         return super.onTouchEvent(event);
     }
 
-    public void setExitFunction(
-        Runnable runnable) {
-        mExitFunc = runnable;
-    }
-
-    public void setWrap(
-        LockWrap lockWrap) {
-        mLockWrap = lockWrap;
-    }
 
     @Override
     public void onViewCreate() {
         lockView = new LockView(mContext, "");
-        lockView.setExitFunction(mExitFunc);
-        lockView.setWrap(mLockWrap);
+
         addView(lockView);
-        mCordovaWrap = new CordovaWrap(mRemoteContext);
+        mCordovaWrap = new CordovaWrap(mContext, mRemoteContext);
+        if (mRemoteContext == null)
+            mRemoteContext = mContext;
         mCordovaWrap.onCreate(null);
-        try {
-            FileUtils.copyAssetDirToFiles(mRemoteContext, mContext, "www");
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            FileUtils.copyAssetDirToFiles(mRemoteContext, mContext, "www");
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         mCordovaWrap.launchUrl = "file:///" + mRemoteContext.getFilesDir() + "/"
-                                 + "www" + "/index.html";
-        mWebView = (WebView)mCordovaWrap.loadWebViewUrl(mCordovaWrap.launchUrl);
+                + "www" + "/index.html";
+        mWebView = (WebView) mCordovaWrap.loadWebViewUrl(mCordovaWrap.launchUrl);
         mWebView.setBackgroundColor(0x50000000);
-        mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,900));
+        mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 900));
         addView(mWebView);
 
         lockView.onViewCreate();
@@ -255,7 +243,7 @@ public class FrameContainer extends FrameLayout implements IBaseView {
         @JavascriptInterface
         public void toastMessage(String message) {
             Toast.makeText(mContext, message, Toast.LENGTH_LONG)
-                .show();
+                    .show();
         }
 
         @JavascriptInterface

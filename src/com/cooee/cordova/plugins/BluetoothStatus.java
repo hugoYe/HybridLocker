@@ -19,7 +19,7 @@ public class BluetoothStatus extends CordovaPlugin {
     private static CordovaWebView mwebView;
     private static CordovaInterface mcordova;
 
-    private static final String LOG_TAG = "BluetoothStatus";
+    private static final String LOG_TAG = "BluetoothStatusPlugin";
     private BluetoothAdapter bluetoothAdapter;
     private CallbackContext callbackContext;
 

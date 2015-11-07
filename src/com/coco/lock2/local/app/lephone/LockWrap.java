@@ -18,7 +18,7 @@ public class LockWrap implements IWrap {
     private FrameContainer lockView = null;
     private Context context = null;
     private Context remoteContext;
-    private Callback kernelCallback = null;
+    private static Callback kernelCallback = null;
     private String simInf = "";
     private Callback appService = new Callback() {
 
@@ -63,19 +63,7 @@ public class LockWrap implements IWrap {
 
     @Override
     public void onCreate() {
-        if (remoteContext != null) {
-            lockView = new FrameContainer(context, remoteContext);
-        } else {
-            lockView = new FrameContainer(context, context);
-        }
-        lockView.setExitFunction(new Runnable() {
-
-            @Override
-            public void run() {
-                finish();
-            }
-        });
-        lockView.setWrap(this);
+        lockView = new FrameContainer(context, remoteContext);
         lockView.onViewCreate();
     }
 
@@ -113,7 +101,7 @@ public class LockWrap implements IWrap {
         return appService;
     }
 
-    private void finish() {
+    public static void unLock() {
         Log.d(LOG_TAG, "finish");
         Message msg = Message.obtain();
         msg.what = KERNEL_EXIT;
@@ -121,7 +109,7 @@ public class LockWrap implements IWrap {
         msg.recycle();
     }
 
-    public void resetLight() {
+    public static void resetLight() {
         Log.d(LOG_TAG, "resetLight");
         Message msg = Message.obtain();
         msg.what = KERNEL_RESET_LIGHT;

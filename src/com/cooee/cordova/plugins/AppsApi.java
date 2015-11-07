@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.coco.lock2.local.app.base.AppInfo;
 import com.coco.lock2.local.app.base.Tools;
+import com.coco.lock2.local.app.lephone.LockWrap;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class AppsApi extends CordovaPlugin {
+
+    private static final String TAG = "AppsApiPlugin";
 
     public final String ACTION_CHECK_AVAILABILITY = "checkAvailability";
     public final String ACTION_START_ACTIVITY = "startActivity";
@@ -37,11 +40,14 @@ public class AppsApi extends CordovaPlugin {
             this.checkAvailability(uri, callbackContext);
             return true;
         } else if (action.equals(ACTION_START_ACTIVITY)) {
+            Log.e(TAG, "######## startActivity 111");
             if (cordova.getActivity() != null) {
+                Log.e(TAG, "######## startActivity 222");
                 cordova.getActivity().runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
+                        Log.e(TAG, "######## startActivity 333");
                         try {
 
                             String method = args.getString(0);
@@ -56,37 +62,41 @@ public class AppsApi extends CordovaPlugin {
                                 intent.setData(uri);
                             }
                             cordova.getActivity().startActivity(intent);
+                            LockWrap.unLock();
 
                         } catch (JSONException ex) {
                             mCallbackContext.sendPluginResult(new PluginResult(
-                                PluginResult.Status.JSON_EXCEPTION));
+                                    PluginResult.Status.JSON_EXCEPTION));
                         }
                     }
 
                 });
             } else if (cordova.getContext() != null) {
+                Log.e(TAG, "######## startActivity 444, cordova.getContext() = " + cordova.getContext());
                 cordova.getCordovaWrap().runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
+                        Log.e(TAG, "######## startActivity 555");
                         try {
 
                             String method = args.getString(0);
-                            Log.d("", "intent=" + method);
+                            Log.i(TAG, "######## startActivity--- method = " + method);
                             Intent intent;
                             try {
                                 intent = Intent.parseUri(method, 0);
+                                Log.i(TAG, "######## startActivity--- intent = " + intent.toString());
 
                             } catch (Exception e) {
                                 intent = new Intent(Intent.ACTION_VIEW);
                                 Uri uri = Uri.parse(method);
                                 intent.setData(uri);
                             }
-                            cordova.getActivity().startActivity(intent);
-
+                            cordova.getContext().startActivity(intent);
+                            LockWrap.unLock();
                         } catch (JSONException ex) {
                             mCallbackContext.sendPluginResult(new PluginResult(
-                                PluginResult.Status.JSON_EXCEPTION));
+                                    PluginResult.Status.JSON_EXCEPTION));
                         }
                     }
 
@@ -154,7 +164,6 @@ public class AppsApi extends CordovaPlugin {
     }
 
     public void bindWebFavoriteApp() {
-        Log.i("", "######## bindWebFavoriteApp 111");
         Context ctx = null;
         if (this.cordova.getActivity() != null) {
             ctx = this.cordova.getActivity().getApplicationContext();
@@ -164,12 +173,15 @@ public class AppsApi extends CordovaPlugin {
 
         final JSONObject object = new JSONObject();//创建一个总的对象，这个对象对整个json串
         JSONArray jsonarray = new JSONArray();//json数组，里面包含的内容为pet的所有对象
+        Log.i(TAG, "######## bindWebFavoriteApp---context = " + ctx);
         ArrayList<AppInfo> list = Tools.recentTasks(ctx);
-        Log.i("", "######## bindWebFavoriteApp 222");
+        Log.i(TAG, "######## bindWebFavoriteApp,list.size = " + list.size());
         for (int i = 0; i < list.size(); i++) {
             AppInfo app = list.get(i);
             try {
                 JSONObject jsonObj = new JSONObject();//pet对象，json形式
+                Log.i(TAG, "######## bindWebFavoriteApp--- app.appName = " + app.appName +
+                        ", app.appIntent = " + app.appIntent.toString() + ", app.appIntent.toUri(0) = " + app.appIntent.toUri(0));
                 jsonObj.put("intent", app.appIntent.toUri(0));
                 String base64 = Tools.bitmaptoString(Tools.createIconBitmap(app.appIcon));
                 jsonObj.put("bitmap", base64);
@@ -178,6 +190,7 @@ public class AppsApi extends CordovaPlugin {
 
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
+                Log.i(TAG, "######## bindWebFavoriteApp--- exception111 = " + e.toString());
                 e.printStackTrace();
             }
         }
@@ -185,12 +198,13 @@ public class AppsApi extends CordovaPlugin {
             object.put("app", jsonarray);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
+            Log.i(TAG, "######## bindWebFavoriteApp--- exception222 = " + e.toString());
             e.printStackTrace();
         }
 
         sendJS("javascript:bindWebFavoriteApp" + "(" + object.toString() + ");");
 
-        Log.i("", "######## bindWebFavoriteApp 333");
+        Log.i(TAG, "######## bindWebFavoriteApp done !!!!");
     }
 
     private void sendJS(final String js) {
@@ -201,7 +215,7 @@ public class AppsApi extends CordovaPlugin {
                     webView.loadUrl(js);
                 }
             });
-        } else if (cordova.getContext() != null) {
+        } else if (cordova.getCordovaWrap() != null) {
             cordova.getCordovaWrap().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

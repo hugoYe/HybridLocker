@@ -32,6 +32,8 @@ public class CordovaWrap {
 
     private Context mContext;
 
+    private Context mRemoteContext;
+
     // The webview for our app
     protected CordovaWebView appView;
 
@@ -56,16 +58,18 @@ public class CordovaWrap {
     final Handler mHandler = new Handler();
 
     public final void runOnUiThread(Runnable action) {
+        LOG.e(TAG, "######## runOnUiThread, mHandler = " + mHandler + ", loop = " + mHandler.getLooper());
         mHandler.post(action);
     }
 
-    public CordovaWrap(Context context) {
+    public CordovaWrap(Context context, Context remoteContext) {
         this.mContext = context;
+        this.mRemoteContext = remoteContext;
     }
 
     public void onCreate(Bundle savedInstanceState) {
         LOG.i(TAG, "Apache Cordova native platform version " + CordovaWebView.CORDOVA_VERSION
-                   + " is starting");
+                + " is starting");
         LOG.d(TAG, "CordovaActivity.onCreate()");
 
         // need to activate preferences before super.onCreate to avoid "requestFeature() must be called before adding content" exception
@@ -160,7 +164,7 @@ public class CordovaWrap {
 
     /**
      * Construct the default web view object.
-     *
+     * <p/>
      * Override this to customize the webview that is used.
      */
     protected CordovaWebView makeWebView() {
@@ -168,10 +172,16 @@ public class CordovaWrap {
     }
 
     protected CordovaWebViewEngine makeWebViewEngine() {
-        return CordovaWebViewImpl.createEngine(mContext, preferences);
+        return CordovaWebViewImpl.createEngineWrap(mContext, mRemoteContext, preferences);
     }
 
     protected CordovaInterfaceImpl makeCordovaInterface() {
+//        Context context = null;
+//        if (mRemoteContext != null) {
+//            context = mRemoteContext;
+//        } else {
+//            context = mContext;
+//        }
         return new CordovaInterfaceImpl(mContext, this) {
             @Override
             public Object onMessage(String id, Object data) {
@@ -204,8 +214,8 @@ public class CordovaWrap {
             //Why are we setting a constant as the ID? This should be investigated
             appView.getView().setId(100);
             appView.getView().setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
 
             if (preferences.contains("BackgroundColor")) {
                 int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
@@ -248,8 +258,8 @@ public class CordovaWrap {
             // CB-9382 If there is an activity that started for result and main activity is waiting for callback
             // result, we shoudn't stop WebView Javascript timers, as activity for result might be using them
             boolean
-                keepRunning =
-                this.keepRunning || this.cordovaInterface.activityResultCallback != null;
+                    keepRunning =
+                    this.keepRunning || this.cordovaInterface.activityResultCallback != null;
             this.appView.handlePause(keepRunning);
         }
     }
@@ -358,7 +368,7 @@ public class CordovaWrap {
                     if (exit) {
                         me.appView.getView().setVisibility(View.GONE);
                         me.displayError("Application Error", description + " (" + failingUrl + ")",
-                                        "OK", exit);
+                                "OK", exit);
                     }
                 }
             });
@@ -379,15 +389,15 @@ public class CordovaWrap {
                     dlg.setTitle(title);
                     dlg.setCancelable(false);
                     dlg.setPositiveButton(button,
-                                          new AlertDialog.OnClickListener() {
-                                              public void onClick(DialogInterface dialog,
-                                                                  int which) {
-                                                  dialog.dismiss();
-                                                  if (exit) {
+                            new AlertDialog.OnClickListener() {
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    dialog.dismiss();
+                                    if (exit) {
 //                                                      finish();
-                                                  }
-                                              }
-                                          });
+                                    }
+                                }
+                            });
                     dlg.create();
                     dlg.show();
                 } catch (Exception e) {
@@ -436,7 +446,7 @@ public class CordovaWrap {
             JSONObject d = (JSONObject) data;
             try {
                 this.onReceivedError(d.getInt("errorCode"), d.getString("description"),
-                                     d.getString("url"));
+                        d.getString("url"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
