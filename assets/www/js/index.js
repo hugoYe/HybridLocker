@@ -69,24 +69,38 @@ $(function() {
 		event.stopPropagation();
 	})
 	$("#app .app_item img").bind('touchend',function(event){
-    		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
-    		event.stopPropagation();
-    	})
+		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+		event.stopPropagation();
+	})
 
 	//状态栏图标点击动画
 	$("#state .state_item div img").bind('touchstart',function(event){
-            $(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
-            event.stopPropagation();
-        })
-    $("#state .state_item div img").bind('touchend',function(event){
-            $(this).css({"-webkit-transform":"scale3d(1,1,1)"});
-            event.stopPropagation();
-        })
-	//为所有a标签加上点击统计事件
-	$("a").bind('click',function(event){
-		plugins.EventStatistics.clickApp();
+		$(this).css({"-webkit-transform":"scale3d(1.1,1.1,1)"});
 		event.stopPropagation();
 	})
+    $("#state .state_item div img").bind('touchend',function(event){
+		$(this).css({"-webkit-transform":"scale3d(1,1,1)"});
+		event.stopPropagation();
+	})
+
+	$(".link_item a").bind("click",function(event){
+		var img=this.getElementsByTagName("img")[0];
+		var src=$(img).attr("src");
+		var p=this.getElementsByTagName("p")[0].innerHTML;
+		var url = this.href;
+		convertImgToBase64(src,function(base64Img) {
+			console.log("######## base64Img = "+base64Img);
+			plugins.AppsApi.startShortcut(url, p, base64Img);
+		});
+		event.preventDefault();
+		event.stopPropagation();
+	})
+	$(".link_table a").bind("click",function(event){
+		plugins.AppsApi.startUrl(this.href);
+		event.preventDefault();
+		event.stopPropagation();
+	})
+
 	//为控制中心图标绑定事件
 	$("#button_th").bind('touchstart', dragStart);
 	$("#button_th").bind('touchmove', drag);
@@ -210,6 +224,22 @@ function slideDown(){
 	});
 	$("img.touch").css({"-webkit-transform":"rotateZ(180deg)"});
 	translateY=0;
+}
+
+function convertImgToBase64(url, callback, outputFormat) {
+	var canvas = document.createElement('CANVAS'),
+	ctx = canvas.getContext('2d'),
+	img = new Image;
+	img.crossOrigin = 'Anonymous';
+	img.onload = function(){
+		canvas.height = img.height;
+		canvas.width = img.width;
+		ctx.drawImage(img,0,0);
+		var dataURL = canvas.toDataURL(outputFormat || 'image/png');
+		callback.call(this, dataURL);
+		canvas = null;
+	};
+	img.src = url;
 }
 
 //初始化app栏,并为每个app绑定openApp函数

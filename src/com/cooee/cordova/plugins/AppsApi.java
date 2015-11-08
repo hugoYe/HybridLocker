@@ -25,6 +25,8 @@ public class AppsApi extends CordovaPlugin {
 
     public final String ACTION_CHECK_AVAILABILITY = "checkAvailability";
     public final String ACTION_START_ACTIVITY = "startActivity";
+    public final String ACTION_START_SHORTCUT = "startShortcut";
+    public final String ACTION_START_BROWSER_URL = "startUrl";
     public final String ACTION_BIND_FAVORITE_APP = "bindFavoriteApp";
 
     private CallbackContext mCallbackContext;
@@ -40,93 +42,13 @@ public class AppsApi extends CordovaPlugin {
             this.checkAvailability(uri, callbackContext);
             return true;
         } else if (action.equals(ACTION_START_ACTIVITY)) {
-            Log.e(TAG, "######## startActivity 111");
-            if (cordova.getActivity() != null) {
-                Log.e(TAG, "######## startActivity 222");
-                cordova.getActivity().runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        Log.e(TAG, "######## startActivity 333");
-                        try {
-
-                            String method = args.getString(0);
-                            Log.d("", "intent=" + method);
-                            Intent intent;
-                            try {
-                                intent = Intent.parseUri(method, 0);
-
-                            } catch (Exception e) {
-                                intent = new Intent(Intent.ACTION_VIEW);
-                                Uri uri = Uri.parse(method);
-                                intent.setData(uri);
-                            }
-                            cordova.getActivity().startActivity(intent);
-                            LockWrap.unLock();
-
-                        } catch (JSONException ex) {
-                            mCallbackContext.sendPluginResult(new PluginResult(
-                                    PluginResult.Status.JSON_EXCEPTION));
-                        }
-                    }
-
-                });
-            } else if (cordova.getContext() != null) {
-                Log.e(TAG, "######## startActivity 444, cordova.getContext() = " + cordova.getContext());
-                cordova.getCordovaWrap().runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        Log.e(TAG, "######## startActivity 555");
-                        try {
-
-                            String method = args.getString(0);
-                            Log.i(TAG, "######## startActivity--- method = " + method);
-                            Intent intent;
-                            try {
-                                intent = Intent.parseUri(method, 0);
-                                Log.i(TAG, "######## startActivity--- intent = " + intent.toString());
-
-                            } catch (Exception e) {
-                                intent = new Intent(Intent.ACTION_VIEW);
-                                Uri uri = Uri.parse(method);
-                                intent.setData(uri);
-                            }
-                            cordova.getContext().startActivity(intent);
-                            LockWrap.unLock();
-                        } catch (JSONException ex) {
-                            mCallbackContext.sendPluginResult(new PluginResult(
-                                    PluginResult.Status.JSON_EXCEPTION));
-                        }
-                    }
-
-                });
-            }
-
-            // cordova.getThreadPool().execute(new Runnable() {
-            // @Override
-            // public void run() {
-            // try {
-            //
-            // String method = args.getString(0);
-            // Log.d("", "intent=" + method);
-            // Intent intent;
-            // try {
-            // intent = Intent.parseUri(method, 0);
-            //
-            // } catch (Exception e) {
-            // intent = new Intent(Intent.ACTION_VIEW);
-            // Uri uri = Uri.parse(method);
-            // intent.setData(uri);
-            // }
-            // cordova.getActivity().startActivity(intent);
-            //
-            // } catch (JSONException ex) {
-            // mCallbackContext.sendPluginResult(new PluginResult(
-            // PluginResult.Status.JSON_EXCEPTION));
-            // }
-            // }
-            // });
+            startApp(args);
+            return true;
+        } else if (action.equals(ACTION_START_SHORTCUT)) {
+            startShortcut(args);
+            return true;
+        } else if (action.equals(ACTION_START_BROWSER_URL)) {
+            startUrl(args);
             return true;
         } else if (action.equals(ACTION_BIND_FAVORITE_APP)) {
             bindWebFavoriteApp();
@@ -153,6 +75,214 @@ public class AppsApi extends CordovaPlugin {
             app_installed = false;
         }
         return app_installed;
+    }
+
+    private void startApp(final JSONArray args) {
+        Log.e(TAG, "######## startActivity 111");
+        if (cordova.getActivity() != null) {
+            Log.e(TAG, "######## startActivity 222");
+            cordova.getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Log.e(TAG, "######## startActivity 333");
+                    try {
+
+                        String method = args.getString(0);
+                        Log.d("", "intent=" + method);
+                        Intent intent;
+                        try {
+                            intent = Intent.parseUri(method, 0);
+                        } catch (Exception e) {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            Uri uri = Uri.parse(method);
+                            intent.setData(uri);
+                        }
+                        LockWrap.unLock();
+                        cordova.getActivity().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        } else if (cordova.getContext() != null) {
+            Log.e(TAG, "######## startActivity 444, cordova.getContext() = " + cordova.getContext());
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Log.e(TAG, "######## startActivity 555");
+                    try {
+
+                        String method = args.getString(0);
+                        Log.i(TAG, "######## startActivity--- method = " + method);
+                        Intent intent;
+                        try {
+                            intent = Intent.parseUri(method, 0);
+                            Log.i(TAG, "######## startActivity--- intent = " + intent.toString());
+
+                        } catch (Exception e) {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            Uri uri = Uri.parse(method);
+                            intent.setData(uri);
+                        }
+                        LockWrap.unLock();
+                        cordova.getContext().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        }
+    }
+
+    private void startShortcut(final JSONArray args) {
+        if (cordova.getActivity() != null) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Intent intent = null;
+                    try {
+                        String url = args.getString(0);
+                        String title = args.getString(1);
+                        String base64String = args.getString(2);
+                        Log.d(TAG, "####### url=" + url);
+                        Log.d(TAG, "####### title=" + title);
+                        Log.d(TAG, "####### base64String=" + base64String);
+
+                        try {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setFlags((intent.getFlags() & ~Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Uri uri = Uri.parse(url);
+                            intent.setData(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        LockWrap.unLock();
+                        cordova.getActivity().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        } else if (cordova.getContext() != null) {
+
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Log.e(TAG, "######## startUrl 111, cordova.getContext() = " + cordova.getContext());
+                    Intent intent = null;
+                    try {
+                        String url = args.getString(0);
+                        String title = args.getString(1);
+                        String base64String = args.getString(2);
+                        Log.e(TAG, "######## startUrl 222, url = " + url);
+                        Log.d(TAG, "####### url=" + url);
+                        Log.d(TAG, "####### title=" + title);
+                        Log.d(TAG, "####### base64String=" + base64String);
+
+                        try {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setFlags((intent.getFlags() & ~Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Uri uri = Uri.parse(url);
+                            intent.setData(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Log.e(TAG, "######## startUrl 333, intent = " + intent);
+                        LockWrap.unLock();
+                        cordova.getContext().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        }
+    }
+
+    private void startUrl(final JSONArray args) {
+        Log.e(TAG, "######## startUrl, cordova.getContext() = " + cordova.getContext());
+        if (cordova.getActivity() != null) {
+
+            cordova.getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Intent intent = null;
+                    try {
+                        String url = args.getString(0);
+                        Log.d("", "url=" + url);
+
+                        try {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setFlags((intent.getFlags() & ~Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Uri uri = Uri.parse(url);
+                            intent.setData(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        LockWrap.unLock();
+                        cordova.getActivity().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        } else if (cordova.getContext() != null) {
+
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Log.e(TAG, "######## startUrl 111, cordova.getContext() = " + cordova.getContext());
+                    Intent intent = null;
+                    try {
+                        String url = args.getString(0);
+                        Log.e(TAG, "######## startUrl 222, url = " + url);
+
+                        try {
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setFlags((intent.getFlags() & ~Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Uri uri = Uri.parse(url);
+                            intent.setData(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Log.e(TAG, "######## startUrl 333, intent = " + intent);
+                        LockWrap.unLock();
+                        cordova.getContext().startActivity(intent);
+                    } catch (JSONException ex) {
+                        mCallbackContext.sendPluginResult(new PluginResult(
+                                PluginResult.Status.JSON_EXCEPTION));
+                    }
+                }
+
+            });
+        }
     }
 
     private void checkAvailability(String uri, CallbackContext callbackContext) {
@@ -183,7 +313,7 @@ public class AppsApi extends CordovaPlugin {
                 Log.i(TAG, "######## bindWebFavoriteApp--- app.appName = " + app.appName +
                         ", app.appIntent = " + app.appIntent.toString() + ", app.appIntent.toUri(0) = " + app.appIntent.toUri(0));
                 jsonObj.put("intent", app.appIntent.toUri(0));
-                String base64 = Tools.bitmaptoString(Tools.createIconBitmap(app.appIcon));
+                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
                 jsonObj.put("bitmap", base64);
                 // 把每个数据当作一对象添加到数组里
                 jsonarray.put(jsonObj);//向json数组里面添加对象

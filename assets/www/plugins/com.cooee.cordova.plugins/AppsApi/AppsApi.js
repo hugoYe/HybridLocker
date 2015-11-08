@@ -34,6 +34,24 @@ cordova.define("cordova-plugin-appsapi.AppsApi", function(require, exports, modu
         );
     },
 
+    startShortcut : function(url, title, imgBase64) {
+        cordova.exec(
+              null,
+              null,
+              'AppsApi',
+              'startShortcut', [url, title, imgBase64]
+          );
+    },
+
+    startUrl : function(url) {
+        cordova.exec(
+              null,
+              null,
+              'AppsApi',
+              'startUrl', [url]
+          );
+    },
+
     bindFavoriteApp : function() {
         cordova.exec(null, null, 'AppsApi', 'bindFavoriteApp', []);
     }
