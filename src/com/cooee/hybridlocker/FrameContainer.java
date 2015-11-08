@@ -135,7 +135,8 @@ public class FrameContainer extends FrameLayout implements IBaseView {
 //        Log.i(TAG, "###### FrameContainer dispatchTouchEvent action = " + ev.getAction());
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            lockView.hybridTouchDown(ev);
+//            lockView.hybridTouchDown(ev);
+            lockView.onTouchEvent(ev);
         }
 
         if (TouchEventPrevent.preventWebTouchEvent) {

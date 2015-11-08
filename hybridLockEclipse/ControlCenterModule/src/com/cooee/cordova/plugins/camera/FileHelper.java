@@ -34,40 +34,44 @@ import java.io.InputStream;
 import java.util.Locale;
 
 public class FileHelper {
+
     private static final String LOG_TAG = "FileUtils";
     private static final String _DATA = "_data";
 
     /**
-     * Returns the real path of the given URI string.
-     * If the given URI string represents a content:// URI, the real path is retrieved from the media store.
+     * Returns the real path of the given URI string. If the given URI string represents a
+     * content:// URI, the real path is retrieved from the media store.
      *
      * @param uriString the URI string of the audio/image/video
-     * @param cordova the current application context
+     * @param cordova   the current application context
      * @return the full path to the file
      */
     @SuppressWarnings("deprecation")
     public static String getRealPath(Uri uri, CordovaInterface cordova) {
         String realPath = null;
 
-        if (Build.VERSION.SDK_INT < 11)
+        if (Build.VERSION.SDK_INT < 11) {
             realPath = FileHelper.getRealPathFromURI_BelowAPI11(cordova.getActivity(), uri);
+        }
 
         // SDK >= 11 && SDK < 19
-        else if (Build.VERSION.SDK_INT < 19)
+        else if (Build.VERSION.SDK_INT < 19) {
             realPath = FileHelper.getRealPathFromURI_API11to18(cordova.getActivity(), uri);
+        }
 
         // SDK > 19 (Android 4.4)
-        else
+        else {
             realPath = FileHelper.getRealPathFromURI_API19(cordova.getActivity(), uri);
+        }
 
         return realPath;
     }
 
     /**
-     * Returns the real path of the given URI.
-     * If the given URI is a content:// URI, the real path is retrieved from the media store.
+     * Returns the real path of the given URI. If the given URI is a content:// URI, the real path
+     * is retrieved from the media store.
      *
-     * @param uri the URI of the audio/image/video
+     * @param uri     the URI of the audio/image/video
      * @param cordova the current application context
      * @return the full path to the file
      */
@@ -82,16 +86,22 @@ public class FileHelper {
             String wholeID = DocumentsContract.getDocumentId(uri);
 
             // Split at colon, use second item in the array
-            String id = wholeID.indexOf(":") > -1 ? wholeID.split(":")[1] : wholeID.indexOf(";") > -1 ? wholeID
-                    .split(";")[1] : wholeID;
+            String
+                id =
+                wholeID.indexOf(":") > -1 ? wholeID.split(":")[1]
+                                          : wholeID.indexOf(";") > -1 ? wholeID
+                                              .split(";")[1] : wholeID;
 
-            String[] column = { MediaStore.Images.Media.DATA };
+            String[] column = {MediaStore.Images.Media.DATA};
 
             // where id is equal to
             String sel = MediaStore.Images.Media._ID + "=?";
 
-            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column,
-                    sel, new String[] { id }, null);
+            Cursor
+                cursor =
+                context.getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column,
+                           sel, new String[]{id}, null);
 
             int columnIndex = cursor.getColumnIndex(column[0]);
 
@@ -107,11 +117,13 @@ public class FileHelper {
 
     @SuppressLint("NewApi")
     public static String getRealPathFromURI_API11to18(Context context, Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+        String[] proj = {MediaStore.Images.Media.DATA};
         String result = null;
 
         try {
-            CursorLoader cursorLoader = new CursorLoader(context, contentUri, proj, null, null, null);
+            CursorLoader
+                cursorLoader =
+                new CursorLoader(context, contentUri, proj, null, null, null);
             Cursor cursor = cursorLoader.loadInBackground();
 
             if (cursor != null) {
@@ -126,7 +138,7 @@ public class FileHelper {
     }
 
     public static String getRealPathFromURI_BelowAPI11(Context context, Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+        String[] proj = {MediaStore.Images.Media.DATA};
         String result = null;
 
         try {
@@ -145,16 +157,20 @@ public class FileHelper {
      * Returns an input stream based on given URI string.
      *
      * @param uriString the URI string from which to obtain the input stream
-     * @param cordova the current application context
+     * @param cordova   the current application context
      * @return an input stream into the data at the given URI or null if given an invalid URI string
-     * @throws IOException
      */
-    public static InputStream getInputStreamFromUriString(String uriString, CordovaInterface cordova)
-            throws IOException {
+    public static InputStream getInputStreamFromUriString(String uriString,
+                                                          CordovaInterface cordova)
+        throws IOException {
         InputStream returnValue = null;
         if (uriString.startsWith("content")) {
             Uri uri = Uri.parse(uriString);
-            returnValue = cordova.getActivity().getContentResolver().openInputStream(uri);
+            if (cordova.getActivity() != null) {
+                returnValue = cordova.getActivity().getContentResolver().openInputStream(uri);
+            } else if (cordova.getContext() != null) {
+                returnValue = cordova.getContext().getContentResolver().openInputStream(uri);
+            }
         } else if (uriString.startsWith("file://")) {
             int question = uriString.indexOf("?");
             if (question > -1) {
@@ -163,11 +179,23 @@ public class FileHelper {
             if (uriString.startsWith("file:///android_asset/")) {
                 Uri uri = Uri.parse(uriString);
                 String relativePath = uri.getPath().substring(15);
-                returnValue = cordova.getActivity().getAssets().open(relativePath);
+                if (cordova.getActivity() != null) {
+                    returnValue = cordova.getActivity().getAssets().open(relativePath);
+                } else if (cordova.getContext() != null) {
+                    returnValue = cordova.getContext().getAssets().open(relativePath);
+                }
             } else {
                 // might still be content so try that first
                 try {
-                    returnValue = cordova.getActivity().getContentResolver().openInputStream(Uri.parse(uriString));
+                    if (cordova.getActivity() != null) {
+                        returnValue =
+                            cordova.getActivity().getContentResolver()
+                                .openInputStream(Uri.parse(uriString));
+                    } else if (cordova.getContext() != null) {
+                        returnValue =
+                            cordova.getContext().getContentResolver()
+                                .openInputStream(Uri.parse(uriString));
+                    }
                 } catch (Exception e) {
                     returnValue = null;
                 }
@@ -182,8 +210,8 @@ public class FileHelper {
     }
 
     /**
-     * Removes the "file://" prefix from the given URI string, if applicable.
-     * If the given URI string doesn't have a "file://" prefix, it is returned unchanged.
+     * Removes the "file://" prefix from the given URI string, if applicable. If the given URI
+     * string doesn't have a "file://" prefix, it is returned unchanged.
      *
      * @param uriString the URI string to operate on
      * @return a path without the "file://" prefix
@@ -208,7 +236,7 @@ public class FileHelper {
         }
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
-    
+
     /**
      * Returns the mime type of the data specified by the given URI string.
      *
@@ -220,7 +248,12 @@ public class FileHelper {
 
         Uri uri = Uri.parse(uriString);
         if (uriString.startsWith("content://")) {
-            mimeType = cordova.getActivity().getContentResolver().getType(uri);
+            if (cordova.getActivity() != null) {
+                mimeType = cordova.getActivity().getContentResolver().getType(uri);
+            } else if (cordova.getContext() != null) {
+                mimeType = cordova.getContext().getContentResolver().getType(uri);
+            }
+
         } else {
             mimeType = getMimeTypeForExtension(uri.getPath());
         }

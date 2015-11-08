@@ -452,6 +452,12 @@ public class LockView extends View {
 //        Log.i(TAG, "######### LockView onTouchEvent action = " + event.getAction());
         LockWrap.resetLight();
         int action = event.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mShowUnlock = false;
+            mTouchDownX = event.getRawX();
+            mDrawableUnlock.setAlpha(100);
+//            mHideAnimator.start();
+        } else
         if (action == MotionEvent.ACTION_MOVE) {
             if (mHideAnimator != null && !mHideAnimator.isStarted()) {
                 mHideAnimator.start();

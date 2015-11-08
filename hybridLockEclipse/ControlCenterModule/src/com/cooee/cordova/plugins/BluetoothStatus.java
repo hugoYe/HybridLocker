@@ -19,11 +19,14 @@ public class BluetoothStatus extends CordovaPlugin {
     private static CordovaWebView mwebView;
     private static CordovaInterface mcordova;
 
-    private static final String LOG_TAG = "BluetoothStatus";
+    private static final String LOG_TAG = "BluetoothStatusPlugin";
     private BluetoothAdapter bluetoothAdapter;
+    private CallbackContext callbackContext;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+
+        this.callbackContext = callbackContext;
         if (action.equals("enableBT")) {
             enableBT();
             return true;
@@ -36,6 +39,9 @@ public class BluetoothStatus extends CordovaPlugin {
         } else if(action.equals("initPlugin")) {
             initPlugin();
             return true;
+        } else if(action.equals("isBlueEnabled")) {
+            isBlueEnabled(callbackContext);
+            return true;
         }
         return false;
     }
@@ -44,7 +50,11 @@ public class BluetoothStatus extends CordovaPlugin {
     public void onDestroy() {
         super.onDestroy();
 
-        mcordova.getActivity().unregisterReceiver(mReceiver);
+        if (mcordova.getActivity() != null) {
+            mcordova.getActivity().unregisterReceiver(mReceiver);
+        } else if (mcordova.getContext() != null) {
+            mcordova.getContext().unregisterReceiver(mReceiver);
+        }
     }
 
     @Override
@@ -58,7 +68,11 @@ public class BluetoothStatus extends CordovaPlugin {
 
         // Register for broadcasts on BluetoothAdapter state change
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        mcordova.getActivity().registerReceiver(mReceiver, filter);
+        if (mcordova.getActivity() != null) {
+            mcordova.getActivity().registerReceiver(mReceiver, filter);
+        } else if (mcordova.getContext() != null) {
+            mcordova.getContext().registerReceiver(mReceiver, filter);
+        }
     }
 
     private void enableBT() {
@@ -78,11 +92,20 @@ public class BluetoothStatus extends CordovaPlugin {
             bluetoothAdapter.disable();
         }
     }
+    private boolean isBlueEnabled(CallbackContext callbackContext){
+        boolean isEnabled = bluetoothAdapter.isEnabled();
+        callbackContext.success(isEnabled ? "1" : "0");
+        return isEnabled;
+    }
 
     private void promptForBT() {
         //prompt user for enabling bluetooth
         Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        mcordova.getActivity().startActivity(enableBTIntent);
+        if (mcordova.getActivity() != null) {
+            mcordova.getActivity().startActivity(enableBTIntent);
+        } else if (mcordova.getContext() != null) {
+            mcordova.getContext().startActivity(enableBTIntent);
+        }
     }
 
     private void initPlugin() {
@@ -94,8 +117,14 @@ public class BluetoothStatus extends CordovaPlugin {
 
             sendJS("javascript:cordova.plugins.BluetoothStatus.hasBT = true;");
 
+            PackageManager manager = null;
+            if (mcordova.getActivity() != null) {
+                manager = mcordova.getActivity().getPackageManager();
+            } else if (mcordova.getContext() != null) {
+                manager = mcordova.getContext().getPackageManager();
+            }
             //test if BLE supported
-            if (!mcordova.getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            if (!manager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                 Log.e(LOG_TAG, "BluetoothLE is not supported");
             } else {
                 Log.e(LOG_TAG, "BluetoothLE is supported");
@@ -115,12 +144,21 @@ public class BluetoothStatus extends CordovaPlugin {
     }
 
     private void sendJS(final String js) {
-        mcordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mwebView.loadUrl(js);
-            }
-        });
+        if (mcordova.getActivity() != null) {
+            mcordova.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mwebView.loadUrl(js);
+                }
+            });
+        } else if (mcordova.getCordovaWrap() != null) {
+            mcordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mwebView.loadUrl(js);
+                }
+            });
+        }
     }
 
     //broadcast receiver for BT intent changes

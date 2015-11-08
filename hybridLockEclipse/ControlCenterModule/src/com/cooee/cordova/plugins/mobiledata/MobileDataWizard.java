@@ -34,15 +34,20 @@ public class MobileDataWizard extends CordovaPlugin {
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        this.mConnectivityManager = (ConnectivityManager) cordova.getActivity()
-            .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cordova.getActivity() != null) {
+            this.mConnectivityManager = (ConnectivityManager) cordova.getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        } else if (cordova.getContext() != null) {
+            this.mConnectivityManager = (ConnectivityManager) cordova.getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        }
     }
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext)
         throws JSONException {
 
-        if(action.equals(ACTION_IS_MOBILE_DATA_ENABLED)) {
+        if (action.equals(ACTION_IS_MOBILE_DATA_ENABLED)) {
             return this.isMobileDataEnabled(callbackContext);
         } else if (action.equals(ACTION_click_MOBILE_DATA)) {
             this.clickMobileData();
@@ -57,8 +62,14 @@ public class MobileDataWizard extends CordovaPlugin {
         boolean isEnabled = false;
         try {
             // 对于没有SIM卡的手机做相应的处理
-            TelephonyManager tm = (TelephonyManager) cordova.getActivity()
-                .getSystemService(Context.TELEPHONY_SERVICE);
+            TelephonyManager tm = null;
+            if (cordova.getActivity() != null) {
+                tm = (TelephonyManager) cordova.getActivity()
+                    .getSystemService(Context.TELEPHONY_SERVICE);
+            } else if (cordova.getContext() != null) {
+                tm = (TelephonyManager) cordova.getContext()
+                    .getSystemService(Context.TELEPHONY_SERVICE);
+            }
             if (tm == null || TelephonyManager.SIM_STATE_UNKNOWN == tm.getSimState()
                 || tm.getNetworkOperatorName().equals("") || tm.getNetworkType() == 0) {
                 callbackContext.success(isEnabled ? "1" : "0");
@@ -81,7 +92,7 @@ public class MobileDataWizard extends CordovaPlugin {
 
 
     public void clickMobileData() {
-        Log.e(TAG,"clickMobileData");
+        Log.e(TAG, "clickMobileData");
         if (mConnectivityManager == null) {
             return;
         }
@@ -99,7 +110,11 @@ public class MobileDataWizard extends CordovaPlugin {
                                                       "com.android.settings.Settings$DataUsageSummaryActivity"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                                 Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                cordova.getActivity().startActivity(intent);
+                if (cordova.getActivity() != null) {
+                    cordova.getActivity().startActivity(intent);
+                } else if (cordova.getContext() != null) {
+                    cordova.getContext().startActivity(intent);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -142,7 +157,13 @@ public class MobileDataWizard extends CordovaPlugin {
     public void longClickMobileData() {
         // 对于5.0以上的点击mobile 直接进入移动数据设置界面
         if (Build.VERSION.SDK_INT >= 21) {
-            cordova.getActivity().startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+            if (cordova.getActivity() != null) {
+                cordova.getActivity()
+                    .startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+            } else if (cordova.getContext() != null) {
+                cordova.getContext()
+                    .startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+            }
             return;
         }
         // 对于5.0以下的点击mobile 直接进入移动数据统计界面
@@ -151,7 +172,11 @@ public class MobileDataWizard extends CordovaPlugin {
             intent.setComponent(new ComponentName("com.android.settings",
                                                   "com.android.settings.Settings$DataUsageSummaryActivity"));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            cordova.getActivity().startActivity(intent);
+            if (cordova.getActivity() != null) {
+                cordova.getActivity().startActivity(intent);
+            } else if (cordova.getContext() != null) {
+                cordova.getContext().startActivity(intent);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

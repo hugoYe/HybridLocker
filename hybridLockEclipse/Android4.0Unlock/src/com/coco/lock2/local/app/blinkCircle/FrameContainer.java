@@ -198,7 +198,7 @@ public class FrameContainer extends FrameLayout implements IBaseView {
             try {
                 JSONObject jsonObj = new JSONObject();//pet对象，json形式
                 jsonObj.put("intent", app.appIntent);
-                String base64 = Tools.bitmaptoString(Tools.createIconBitmap(app.appIcon));
+                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
                 jsonObj.put("bitmap", base64);
                 // 把每个数据当作一对象添加到数组里
                 jsonarray.put(jsonObj);//向json数组里面添加对象
@@ -235,7 +235,7 @@ public class FrameContainer extends FrameLayout implements IBaseView {
             try {
                 JSONObject jsonObj = new JSONObject();//pet对象，json形式
                 jsonObj.put("intent", app.appIntent.toUri(0));
-                String base64 = Tools.bitmaptoString(Tools.createIconBitmap(app.appIcon));
+                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
                 jsonObj.put("bitmap", base64);
                 // 把每个数据当作一对象添加到数组里
                 jsonarray.put(jsonObj);//向json数组里面添加对象

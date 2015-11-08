@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
@@ -43,14 +44,14 @@ public class Tools {
         ArrayList<AppInfo> appInfoList = new ArrayList<AppInfo>();
         final PackageManager pm = context.getPackageManager();
         final ActivityManager
-            am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         //拿到最近使用的应用的信息列表
         final List<ActivityManager.RecentTaskInfo> recentTasks =
-            am.getRecentTasks(MAX_RECENT_TASKS, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+                am.getRecentTasks(MAX_RECENT_TASKS, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
         //自制一个home activity info，用来区分
         ActivityInfo homeInfo =
-            new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-                .resolveActivityInfo(pm, 0);
+                new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                        .resolveActivityInfo(pm, 0);
         int index = 0;
         int numTasks = recentTasks.size();
         //开始初始化每个任务的信息
@@ -64,7 +65,7 @@ public class Tools {
             //跳过home activity
             if (homeInfo != null) {
                 if (homeInfo.packageName.equals(intent.getComponent().getPackageName())
-                    && homeInfo.name.equals(intent.getComponent().getClassName())) {
+                        && homeInfo.name.equals(intent.getComponent().getClassName())) {
                     continue;
                 }
             }
@@ -73,7 +74,7 @@ public class Tools {
                 continue;
             }
             intent.setFlags((intent.getFlags() & ~Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-                            | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
             final ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);
             if (resolveInfo != null) {
                 final ActivityInfo activityInfo = resolveInfo.activityInfo;
@@ -102,10 +103,10 @@ public class Tools {
             int sourceWidth = icon.getIntrinsicWidth();
             int sourceHeight = icon.getIntrinsicHeight();
             Bitmap bitmapCanves =
-                Bitmap.createBitmap(sourceWidth, sourceHeight, Bitmap.Config.ARGB_8888);
+                    Bitmap.createBitmap(sourceWidth, sourceHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas();
             canvas.setDrawFilter(
-                new PaintFlagsDrawFilter(Paint.DITHER_FLAG, Paint.FILTER_BITMAP_FLAG));
+                    new PaintFlagsDrawFilter(Paint.DITHER_FLAG, Paint.FILTER_BITMAP_FLAG));
             canvas.setBitmap(bitmapCanves);
             Rect oldBounds = new Rect();
             oldBounds.set(icon.getBounds());
@@ -118,27 +119,37 @@ public class Tools {
         return bitmap;
     }
 
-    public static String bitmaptoString(Bitmap bitmap) {
-        // 将Bitmap转换成字符串
+   
+    public static String bitmapToBase64(Bitmap bitmap) {
+        String result = "";
+        ByteArrayOutputStream bos = null;
+        try {
+            if (null != bitmap) {
+                bos = new ByteArrayOutputStream();
+                bitmap.compress(CompressFormat.PNG, 100, bos);//将bitmap放入字节数组流中
 
-        String string = null;
+                bos.flush();//将bos流缓存在内存中的数据全部输出，清空缓存
+                bos.close();
 
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-
-        bitmap.compress(CompressFormat.PNG, 100, bStream);
-
-        byte[] bytes = bStream.toByteArray();
-
-        string = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-        return string;
-
+                byte[] bitmapByte = bos.toByteArray();
+                result = Base64.encodeToString(bitmapByte, Base64.DEFAULT);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 
+    public static Bitmap base64ToBitmap(String base64String) {
+        byte[] bytes = Base64.decode(base64String, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        return bitmap;
+    }
+
     public static HashMap<String, String> setTime(
-        Context context,
-        Date date) {
+            Context context,
+            Date date) {
         date.setTime(System.currentTimeMillis());
         HashMap<String, String> time = new HashMap<String, String>();
         String hour = null;

@@ -10,6 +10,8 @@ import org.json.JSONException;
  */
 public class TouchEventPrevent extends CordovaPlugin {
 
+    private static final String  TAG = "TouchEventPreventPlugin";
+
     private static final String ACTION_PREVENT_TOUCH_SELF = "preventTouchSelf";
 
     public static boolean preventWebTouchEvent;

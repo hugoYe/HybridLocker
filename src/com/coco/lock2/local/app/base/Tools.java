@@ -147,25 +147,6 @@ public class Tools {
         return bitmap;
     }
 
-//    public String bitmaptoString(Bitmap bitmap) {
-//        // 将Bitmap转换成Base64字符串
-//        StringBuffer string = new StringBuffer();
-//        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-//
-//        try {
-//            bitmap.compress(CompressFormat.PNG, 100, bStream);
-//            bStream.flush();
-//            bStream.close();
-//            byte[] bytes = bStream.toByteArray();
-//            string.append(Base64.encodeToString(bytes, Base64.NO_WRAP));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("string.."+string.length());
-//        return string.toString();
-//    }
-
-
     public static HashMap<String, String> setTime(
             Context context,
             Date date) {
