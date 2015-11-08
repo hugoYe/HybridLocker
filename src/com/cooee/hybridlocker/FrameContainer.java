@@ -36,11 +36,11 @@ public class FrameContainer extends FrameLayout implements IBaseView {
 
     private LockView lockView;
 
-
-    private JsInteration jsInteration = new JsInteration();
-
-    private TouchEventPrevent touchEventPrevent = new TouchEventPrevent();
-
+//
+//    private JsInteration jsInteration = new JsInteration();
+//
+//    private TouchEventPrevent touchEventPrevent = new TouchEventPrevent();
+//
 
     public FrameContainer(Context context, Context remoteContext) {
         super(context);
@@ -54,81 +54,81 @@ public class FrameContainer extends FrameLayout implements IBaseView {
     private WebView mWebView;
 
 
-    WebView webView1;
+//    WebView webView1;
 
-    private void bindWebFavoriteApp11() {
-        Log.i("", "######## bindWebFavoriteApp11 111");
-        final JSONObject object = new JSONObject();//创建一个总的对象，这个对象对整个json串
-        JSONArray jsonarray = new JSONArray();//json数组，里面包含的内容为pet的所有对象
-        ArrayList<AppInfo> list = Tools.recentTasks(mContext);
-        Log.i("", "######## bindWebFavoriteApp11 222");
-        for (int i = 0; i < list.size(); i++) {
-            AppInfo app = list.get(i);
-            try {
-                JSONObject jsonObj = new JSONObject();//pet对象，json形式
-                jsonObj.put("intent", app.appIntent);
-                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
-                jsonObj.put("bitmap", base64);
-                // 把每个数据当作一对象添加到数组里
-                jsonarray.put(jsonObj);//向json数组里面添加对象
+//    private void bindWebFavoriteApp11() {
+//        Log.i("", "######## bindWebFavoriteApp11 111");
+//        final JSONObject object = new JSONObject();//创建一个总的对象，这个对象对整个json串
+//        JSONArray jsonarray = new JSONArray();//json数组，里面包含的内容为pet的所有对象
+//        ArrayList<AppInfo> list = Tools.recentTasks(mContext);
+//        Log.i("", "######## bindWebFavoriteApp11 222");
+//        for (int i = 0; i < list.size(); i++) {
+//            AppInfo app = list.get(i);
+//            try {
+//                JSONObject jsonObj = new JSONObject();//pet对象，json形式
+//                jsonObj.put("intent", app.appIntent);
+//                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
+//                jsonObj.put("bitmap", base64);
+//                // 把每个数据当作一对象添加到数组里
+//                jsonarray.put(jsonObj);//向json数组里面添加对象
+//
+//            } catch (JSONException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//        }
+//        try {
+//            object.put("app", jsonarray);
+//        } catch (JSONException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        webView1.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                webView1.loadUrl("javascript:bindWebFavoriteApp" + "(" + object.toString() + ");");
+//            }
+//        });
+//
+//        Log.i("", "######## bindWebFavoriteApp11 333");
+//    }
 
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        try {
-            object.put("app", jsonarray);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        webView1.post(new Runnable() {
-            @Override
-            public void run() {
-                webView1.loadUrl("javascript:bindWebFavoriteApp" + "(" + object.toString() + ");");
-            }
-        });
-
-        Log.i("", "######## bindWebFavoriteApp11 333");
-    }
-
-    private void bindWebFavoriteApp() {
-        Log.i("", "######## bindWebFavoriteApp 111");
-        final JSONObject object = new JSONObject();//创建一个总的对象，这个对象对整个json串
-        JSONArray jsonarray = new JSONArray();//json数组，里面包含的内容为pet的所有对象
-        ArrayList<AppInfo> list = Tools.recentTasks(mContext);
-        Log.i("", "######## bindWebFavoriteApp 222");
-        for (int i = 0; i < list.size(); i++) {
-            AppInfo app = list.get(i);
-            try {
-                JSONObject jsonObj = new JSONObject();//pet对象，json形式
-                jsonObj.put("intent", app.appIntent.toUri(0));
-                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
-                jsonObj.put("bitmap", base64);
-                // 把每个数据当作一对象添加到数组里
-                jsonarray.put(jsonObj);//向json数组里面添加对象
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        try {
-            object.put("app", jsonarray);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        mWebView.post(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.loadUrl("javascript:bindWebFavoriteApp" + "(" + object.toString() + ");");
-            }
-        });
-
-        Log.i("", "######## bindWebFavoriteApp 333");
-    }
+//    private void bindWebFavoriteApp() {
+//        Log.i("", "######## bindWebFavoriteApp 111");
+//        final JSONObject object = new JSONObject();//创建一个总的对象，这个对象对整个json串
+//        JSONArray jsonarray = new JSONArray();//json数组，里面包含的内容为pet的所有对象
+//        ArrayList<AppInfo> list = Tools.recentTasks(mContext);
+//        Log.i("", "######## bindWebFavoriteApp 222");
+//        for (int i = 0; i < list.size(); i++) {
+//            AppInfo app = list.get(i);
+//            try {
+//                JSONObject jsonObj = new JSONObject();//pet对象，json形式
+//                jsonObj.put("intent", app.appIntent.toUri(0));
+//                String base64 = Tools.bitmapToBase64(Tools.createIconBitmap(app.appIcon));
+//                jsonObj.put("bitmap", base64);
+//                // 把每个数据当作一对象添加到数组里
+//                jsonarray.put(jsonObj);//向json数组里面添加对象
+//
+//            } catch (JSONException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//        }
+//        try {
+//            object.put("app", jsonarray);
+//        } catch (JSONException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        mWebView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mWebView.loadUrl("javascript:bindWebFavoriteApp" + "(" + object.toString() + ");");
+//            }
+//        });
+//
+//        Log.i("", "######## bindWebFavoriteApp 333");
+//    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -176,8 +176,8 @@ public class FrameContainer extends FrameLayout implements IBaseView {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-//        mCordovaWrap.launchUrl = "file:///" + mRemoteContext.getFilesDir() + "/"
-//                + "www" + "/index.html";
+        mCordovaWrap.launchUrl = "file:///" + mRemoteContext.getFilesDir() + "/"
+                + "www" + "/index.html";
         mWebView = (WebView) mCordovaWrap.loadWebViewUrl(mCordovaWrap.launchUrl);
         mWebView.setBackgroundColor(0x00000000);
         mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1100));
@@ -205,56 +205,56 @@ public class FrameContainer extends FrameLayout implements IBaseView {
     }
 
 
-    private class MyWebView extends WebView {
+//    private class MyWebView extends WebView {
+//
+//        public MyWebView(Context context) {
+//            super(context, null);
+//        }
+//
+//        @Override
+//        public boolean onInterceptTouchEvent(MotionEvent ev) {
+//            Log.i(TAG, "###### MyWebView dispatchTouchEvent action = " + ev.getAction());
+//            return super.onInterceptTouchEvent(ev);
+//        }
+//
+//        @Override
+//        public boolean dispatchTouchEvent(MotionEvent ev) {
+//            Log.i(TAG, "###### MyWebView dispatchTouchEvent action = " + ev.getAction());
+//            return super.dispatchTouchEvent(ev);
+//        }
+//
+//        @Override
+//        public boolean onTouchEvent(MotionEvent event) {
+//            Log.i(TAG, "###### MyWebView onTouchEvent action = " + event.getAction());
+//            return super.onTouchEvent(event);
+//        }
+//    }
 
-        public MyWebView(Context context) {
-            super(context, null);
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(MotionEvent ev) {
-            Log.i(TAG, "###### MyWebView dispatchTouchEvent action = " + ev.getAction());
-            return super.onInterceptTouchEvent(ev);
-        }
-
-        @Override
-        public boolean dispatchTouchEvent(MotionEvent ev) {
-            Log.i(TAG, "###### MyWebView dispatchTouchEvent action = " + ev.getAction());
-            return super.dispatchTouchEvent(ev);
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            Log.i(TAG, "###### MyWebView onTouchEvent action = " + event.getAction());
-            return super.onTouchEvent(event);
-        }
-    }
-
-    public class JsInteration {
-
-        public boolean prevent = false;
-
-        @JavascriptInterface
-        public void bindFavoriteApp() {
-//            bindWebFavoriteApp11();
-            bindWebFavoriteApp();
-        }
-
-        @JavascriptInterface
-        public void toastMessage(String message) {
-            Toast.makeText(mContext, message, Toast.LENGTH_LONG)
-                    .show();
-        }
-
-        @JavascriptInterface
-        public void onSumResult(int result) {
-            Log.i("", "###### onSumResult result=" + result);
-        }
-
-        @JavascriptInterface
-        public void prevent() {
-            Log.i("", "###### prevent");
-            this.prevent = true;
-        }
-    }
+//    public class JsInteration {
+//
+//        public boolean prevent = false;
+//
+//        @JavascriptInterface
+//        public void bindFavoriteApp() {
+////            bindWebFavoriteApp11();
+//            bindWebFavoriteApp();
+//        }
+//
+//        @JavascriptInterface
+//        public void toastMessage(String message) {
+//            Toast.makeText(mContext, message, Toast.LENGTH_LONG)
+//                    .show();
+//        }
+//
+//        @JavascriptInterface
+//        public void onSumResult(int result) {
+//            Log.i("", "###### onSumResult result=" + result);
+//        }
+//
+//        @JavascriptInterface
+//        public void prevent() {
+//            Log.i("", "###### prevent");
+//            this.prevent = true;
+//        }
+//    }
 }
