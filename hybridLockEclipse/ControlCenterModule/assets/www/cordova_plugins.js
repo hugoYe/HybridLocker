@@ -75,6 +75,13 @@ module.exports = [
             "plugins.TouchEventPrevent"
         ]
     },
+    {
+        "file": "plugins/com.cooee.cordova.plugins/EventStatistics/EventStatistics.js",
+        "id": "cordova-plugin-eventstatistics.EventStatistics",
+        "clobbers": [
+            "plugins.EventStatistics"
+        ]
+    },
 ];
 module.exports.metadata = 
 // TOP OF METADATA

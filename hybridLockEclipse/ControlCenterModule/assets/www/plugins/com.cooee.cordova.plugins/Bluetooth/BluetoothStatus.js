@@ -7,9 +7,7 @@ var BluetoothStatus = function() {
 
 BluetoothStatus.initPlugin = function() {
     //wait for device to be ready
-    document.addEventListener("deviceready", function () {
-        exec(null, null, "BluetoothStatus", "initPlugin", []);
-    }, false);
+    exec(null, null, "BluetoothStatus", "initPlugin", []);
 };
 
 BluetoothStatus.enableBT = function() {
@@ -23,7 +21,20 @@ BluetoothStatus.disableBT = function() {
 BluetoothStatus.promptForBT = function() {
     exec(null, null, "BluetoothStatus", "promptForBT", []);
 };
-
+BluetoothStatus.isBlueEnabled =function(win,fail) {
+    if (typeof win != "function") {
+                console.log("isBlueEnabled first parameter must be a function to handle wifi status.");
+                return;
+            }
+            cordova.exec(
+                // Cordova can only return strings to JS, and the underlying plugin
+                // sends a "1" for true and "0" for false.
+                function(result) {
+                    win(result == "1");
+                },
+                fail, 'BluetoothStatus', 'isBlueEnabled', []
+            );
+}
 
 BluetoothStatus.hasBT = false;
 BluetoothStatus.hasBTLE = false;

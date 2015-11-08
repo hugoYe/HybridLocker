@@ -94,7 +94,6 @@ body {
   list-style: none;
   padding-left: 3%;
   padding-top: 2%;
-  padding-bottom: 2%;
   overflow: hidden;
 }
 #app .app_item {
@@ -158,14 +157,12 @@ body {
   margin: 4% auto 3% auto;
   height: 1px;
   background-image: url(../res/divider.png);
-  -webkit-transform: scaleY(0.5);
 }
 .divider2 {
   width: 94%;
   margin: 4% auto 3% auto;
   height: 1px;
   background-image: url(../res/divider.png);
-  -webkit-transform: scaleY(0.5);
 }
 table.link_table {
   width: 94%;
@@ -173,7 +170,7 @@ table.link_table {
   font-size: 1rem;
   border-collapse: collapse;
   background-image: url(../res/divider2.png);
-  background-size: contain;
+  background-size: 99% 98%;
   background-repeat: no-repeat;
 }
 table.link_table tr {
@@ -188,7 +185,7 @@ table.link_table tr td {
 table.link_table tr td .hot {
   position: absolute;
   top: 4px;
-  right: 4px;
+  right: 6px;
   width: 20%;
 }
 table.link_table tr td a {
@@ -205,10 +202,10 @@ table.link_table tr.last_tr {
 }
 #button_th {
   position: absolute;
-  bottom: 1%;
-  left: 2%;
-  width: 10%;
-  transition: opacity 0.3s linear;
+  bottom: -3%;
+  left: -3%;
+  width: 22%;
+  transition: opacity 0.15s linear;
 }
 #button_th img {
   width: 100%;

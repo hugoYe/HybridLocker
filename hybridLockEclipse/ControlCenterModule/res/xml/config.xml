@@ -42,4 +42,7 @@
     <feature name="TouchEventPrevent">
         <param name="android-package" value="com.cooee.cordova.plugins.TouchEventPrevent" />
     </feature>
+    <feature name="EventStatistics">
+        <param name="android-package" value="com.cooee.cordova.plugins.EventStatistics" />
+    </feature>
 </widget>
