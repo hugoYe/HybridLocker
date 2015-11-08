@@ -20,6 +20,7 @@
 package org.apache.cordova;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,8 @@ import java.util.concurrent.Executors;
 public class CordovaInterfaceImpl implements CordovaInterface {
     private static final String TAG = "CordovaInterfaceImpl";
     protected Activity activity;
+    protected Context context;  // added by Hugo.ye
+    protected CordovaWrap cordovaWrap; // added by Hugo.ye
     protected ExecutorService threadPool;
     protected PluginManager pluginManager;
 
@@ -45,16 +48,31 @@ public class CordovaInterfaceImpl implements CordovaInterface {
         this(activity, Executors.newCachedThreadPool());
     }
 
+
     public CordovaInterfaceImpl(Activity activity, ExecutorService threadPool) {
         this.activity = activity;
         this.threadPool = threadPool;
     }
 
+    // added by Hugo.ye begin
+    public CordovaInterfaceImpl(Context context, CordovaWrap cordovaWrap) {
+        this(context, cordovaWrap, Executors.newCachedThreadPool());
+    }
+
+    public CordovaInterfaceImpl(Context context, CordovaWrap cordovaWrap, ExecutorService threadPool) {
+        this.context = context;
+        this.cordovaWrap = cordovaWrap;
+        this.threadPool = threadPool;
+    }
+    // added by Hugo.ye end
+
     @Override
     public void startActivityForResult(CordovaPlugin command, Intent intent, int requestCode) {
         setActivityResultCallback(command);
         try {
-            activity.startActivityForResult(intent, requestCode);
+            if(activity!=null) {
+                activity.startActivityForResult(intent, requestCode);
+            }
         } catch (RuntimeException e) { // E.g.: ActivityNotFoundException
             activityResultCallback = null;
             throw e;
@@ -75,10 +93,22 @@ public class CordovaInterfaceImpl implements CordovaInterface {
         return activity;
     }
 
+    // added by Hugo.ye begin
+    public Context getContext() {
+        return context;
+    }
+
+    public CordovaWrap getCordovaWrap() {
+        return cordovaWrap;
+    }
+    // added by Hugo.ye end
+
     @Override
     public Object onMessage(String id, Object data) {
         if ("exit".equals(id)) {
-            activity.finish();
+            if (activity != null) {
+                activity.finish();
+            }
         }
         return null;
     }
@@ -103,7 +133,7 @@ public class CordovaInterfaceImpl implements CordovaInterface {
      */
     public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
         CordovaPlugin callback = activityResultCallback;
-        if(callback == null && initCallbackService != null) {
+        if (callback == null && initCallbackService != null) {
             // The application was restarted, but had defined an initial callback
             // before being shut down.
             savedResult = new ActivityResultHolder(requestCode, resultCode, intent);
@@ -120,7 +150,7 @@ public class CordovaInterfaceImpl implements CordovaInterface {
             callback.onActivityResult(requestCode, resultCode, intent);
             return true;
         }
-        Log.w(TAG, "Got an activity result, but no plugin was registered to receive it" + (savedResult != null ? " yet!": "."));
+        Log.w(TAG, "Got an activity result, but no plugin was registered to receive it" + (savedResult != null ? " yet!" : "."));
         return false;
     }
 

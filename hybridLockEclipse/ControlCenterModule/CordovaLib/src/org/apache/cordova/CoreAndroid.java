@@ -19,20 +19,16 @@
 
 package org.apache.cordova;
 
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.LOG;
-import org.apache.cordova.PluginResult;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -56,8 +52,8 @@ class CoreAndroid extends CordovaPlugin {
     }
 
     /**
-     * Sets the context of the Command. This can then be used to do things like
-     * get file paths associated with the Activity.
+     * Sets the context of the Command. This can then be used to do things like get file paths
+     * associated with the Activity.
      */
     @Override
     public void pluginInitialize() {
@@ -67,51 +63,52 @@ class CoreAndroid extends CordovaPlugin {
     /**
      * Executes the request and returns PluginResult.
      *
-     * @param action            The action to execute.
-     * @param args              JSONArry of arguments for the plugin.
-     * @param callbackContext   The callback context from which we were invoked.
-     * @return                  A PluginResult object with a status and message.
+     * @param action          The action to execute.
+     * @param args            JSONArry of arguments for the plugin.
+     * @param callbackContext The callback context from which we were invoked.
+     * @return A PluginResult object with a status and message.
      */
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
+        throws JSONException {
         PluginResult.Status status = PluginResult.Status.OK;
         String result = "";
 
         try {
             if (action.equals("clearCache")) {
                 this.clearCache();
-            }
-            else if (action.equals("show")) {
+            } else if (action.equals("show")) {
                 // This gets called from JavaScript onCordovaReady to show the webview.
                 // I recommend we change the name of the Message as spinner/stop is not
                 // indicative of what this actually does (shows the webview).
-                cordova.getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        webView.getPluginManager().postMessage("spinner", "stop");
-                    }
-                });
-            }
-            else if (action.equals("loadUrl")) {
+                if (cordova.getActivity() != null) {
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            webView.getPluginManager().postMessage("spinner", "stop");
+                        }
+                    });
+                } else if (cordova.getCordovaWrap() != null) {
+                    cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                        public void run() {
+                            webView.getPluginManager().postMessage("spinner", "stop");
+                        }
+                    });
+                }
+
+            } else if (action.equals("loadUrl")) {
                 this.loadUrl(args.getString(0), args.optJSONObject(1));
-            }
-            else if (action.equals("cancelLoadUrl")) {
+            } else if (action.equals("cancelLoadUrl")) {
                 //this.cancelLoadUrl();
-            }
-            else if (action.equals("clearHistory")) {
+            } else if (action.equals("clearHistory")) {
                 this.clearHistory();
-            }
-            else if (action.equals("backHistory")) {
+            } else if (action.equals("backHistory")) {
                 this.backHistory();
-            }
-            else if (action.equals("overrideButton")) {
+            } else if (action.equals("overrideButton")) {
                 this.overrideButton(args.getString(0), args.getBoolean(1));
-            }
-            else if (action.equals("overrideBackbutton")) {
+            } else if (action.equals("overrideBackbutton")) {
                 this.overrideBackbutton(args.getBoolean(0));
-            }
-            else if (action.equals("exitApp")) {
+            } else if (action.equals("exitApp")) {
                 this.exitApp();
-            }
-			else if (action.equals("messageChannel")) {
+            } else if (action.equals("messageChannel")) {
                 messageChannel = callbackContext;
                 return true;
             }
@@ -132,22 +129,30 @@ class CoreAndroid extends CordovaPlugin {
      * Clear the resource cache.
      */
     public void clearCache() {
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                webView.clearCache(true);
-            }
-        });
+        if (cordova.getActivity() != null) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.clearCache(true);
+                }
+            });
+        } else if (cordova.getCordovaWrap() != null) {
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.clearCache(true);
+                }
+            });
+        }
+
     }
 
     /**
      * Load the url into the webview.
      *
-     * @param url
-     * @param props			Properties that can be passed in to the Cordova activity (i.e. loadingDialog, wait, ...)
-     * @throws JSONException
+     * @param props Properties that can be passed in to the Cordova activity (i.e. loadingDialog,
+     *              wait, ...)
      */
     public void loadUrl(String url, JSONObject props) throws JSONException {
-        LOG.d("App", "App.loadUrl("+url+","+props+")");
+        LOG.d("App", "App.loadUrl(" + url + "," + props + ")");
         int wait = 0;
         boolean openExternal = false;
         boolean clearHistory = false;
@@ -160,26 +165,20 @@ class CoreAndroid extends CordovaPlugin {
                 String key = keys.getString(i);
                 if (key.equals("wait")) {
                     wait = props.getInt(key);
-                }
-                else if (key.equalsIgnoreCase("openexternal")) {
+                } else if (key.equalsIgnoreCase("openexternal")) {
                     openExternal = props.getBoolean(key);
-                }
-                else if (key.equalsIgnoreCase("clearhistory")) {
+                } else if (key.equalsIgnoreCase("clearhistory")) {
                     clearHistory = props.getBoolean(key);
-                }
-                else {
+                } else {
                     Object value = props.get(key);
                     if (value == null) {
 
-                    }
-                    else if (value.getClass().equals(String.class)) {
-                        params.put(key, (String)value);
-                    }
-                    else if (value.getClass().equals(Boolean.class)) {
-                        params.put(key, (Boolean)value);
-                    }
-                    else if (value.getClass().equals(Integer.class)) {
-                        params.put(key, (Integer)value);
+                    } else if (value.getClass().equals(String.class)) {
+                        params.put(key, (String) value);
+                    } else if (value.getClass().equals(Boolean.class)) {
+                        params.put(key, (Boolean) value);
+                    } else if (value.getClass().equals(Integer.class)) {
+                        params.put(key, (Integer) value);
                     }
                 }
             }
@@ -189,7 +188,7 @@ class CoreAndroid extends CordovaPlugin {
 
         if (wait > 0) {
             try {
-                synchronized(this) {
+                synchronized (this) {
                     this.wait(wait);
                 }
             } catch (InterruptedException e) {
@@ -203,49 +202,68 @@ class CoreAndroid extends CordovaPlugin {
      * Clear page history for the app.
      */
     public void clearHistory() {
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                webView.clearHistory();
-            }
-        });
+        if (cordova.getActivity() != null) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.clearHistory();
+                }
+            });
+        } else if (cordova.getCordovaWrap() != null) {
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.clearHistory();
+                }
+            });
+        }
+
     }
 
     /**
-     * Go to previous page displayed.
-     * This is the same as pressing the backbutton on Android device.
+     * Go to previous page displayed. This is the same as pressing the backbutton on Android
+     * device.
      */
     public void backHistory() {
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                webView.backHistory();
-            }
-        });
+        if (cordova.getActivity() != null) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.backHistory();
+                }
+            });
+        } else if (cordova.getCordovaWrap() != null) {
+            cordova.getCordovaWrap().runOnUiThread(new Runnable() {
+                public void run() {
+                    webView.backHistory();
+                }
+            });
+        }
+
     }
 
     /**
-     * Override the default behavior of the Android back button.
-     * If overridden, when the back button is pressed, the "backKeyDown" JavaScript event will be fired.
+     * Override the default behavior of the Android back button. If overridden, when the back button
+     * is pressed, the "backKeyDown" JavaScript event will be fired.
      *
-     * @param override		T=override, F=cancel override
+     * @param override T=override, F=cancel override
      */
     public void overrideBackbutton(boolean override) {
-        LOG.i("App", "WARNING: Back Button Default Behavior will be overridden.  The backbutton event will be fired!");
+        LOG.i("App",
+              "WARNING: Back Button Default Behavior will be overridden.  The backbutton event will be fired!");
         webView.setButtonPlumbedToJs(KeyEvent.KEYCODE_BACK, override);
     }
 
     /**
-     * Override the default behavior of the Android volume buttons.
-     * If overridden, when the volume button is pressed, the "volume[up|down]button" JavaScript event will be fired.
+     * Override the default behavior of the Android volume buttons. If overridden, when the volume
+     * button is pressed, the "volume[up|down]button" JavaScript event will be fired.
      *
-     * @param button        volumeup, volumedown
-     * @param override      T=override, F=cancel override
+     * @param button   volumeup, volumedown
+     * @param override T=override, F=cancel override
      */
     public void overrideButton(String button, boolean override) {
-        LOG.i("App", "WARNING: Volume Button Default Behavior will be overridden.  The volume event will be fired!");
+        LOG.i("App",
+              "WARNING: Volume Button Default Behavior will be overridden.  The volume event will be fired!");
         if (button.equals("volumeup")) {
             webView.setButtonPlumbedToJs(KeyEvent.KEYCODE_VOLUME_UP, override);
-        }
-        else if (button.equals("volumedown")) {
+        } else if (button.equals("volumedown")) {
             webView.setButtonPlumbedToJs(KeyEvent.KEYCODE_VOLUME_DOWN, override);
         }
     }
@@ -268,9 +286,8 @@ class CoreAndroid extends CordovaPlugin {
 
 
     /**
-     * Listen for telephony events: RINGING, OFFHOOK and IDLE
-     * Send these events to all plugins using
-     *      CordovaActivity.onMessage("telephone", "ringing" | "offhook" | "idle")
+     * Listen for telephony events: RINGING, OFFHOOK and IDLE Send these events to all plugins using
+     * CordovaActivity.onMessage("telephone", "ringing" | "offhook" | "idle")
      */
     private void initTelephonyReceiver() {
         IntentFilter intentFilter = new IntentFilter();
@@ -282,18 +299,17 @@ class CoreAndroid extends CordovaPlugin {
             public void onReceive(Context context, Intent intent) {
 
                 // If state has changed
-                if ((intent != null) && intent.getAction().equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
+                if ((intent != null) && intent.getAction()
+                    .equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
                     if (intent.hasExtra(TelephonyManager.EXTRA_STATE)) {
                         String extraData = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                         if (extraData.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                             LOG.i(TAG, "Telephone RINGING");
                             webView.getPluginManager().postMessage("telephone", "ringing");
-                        }
-                        else if (extraData.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+                        } else if (extraData.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
                             LOG.i(TAG, "Telephone OFFHOOK");
                             webView.getPluginManager().postMessage("telephone", "offhook");
-                        }
-                        else if (extraData.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+                        } else if (extraData.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                             LOG.i(TAG, "Telephone IDLE");
                             webView.getPluginManager().postMessage("telephone", "idle");
                         }
@@ -324,8 +340,7 @@ class CoreAndroid extends CordovaPlugin {
      * Unregister the receiver
      *
      */
-    public void onDestroy()
-    {
+    public void onDestroy() {
         webView.getContext().unregisterReceiver(this.telephonyReceiver);
     }
 }
